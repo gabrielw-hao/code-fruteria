@@ -1,67 +1,129 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 type Props = {
-  id: string;
-  title: string;
-  content: React.ReactNode;
+  id?: string;
   x: number;
   y: number;
   width: number;
   height: number;
+  title?: string;
+  content?: React.ReactNode;
+  onMove?: (dx: number, dy: number) => void;
+  onResize?: (dw: number, dh: number) => void;
+  onClose?: () => void;
   minWidth?: number;
   minHeight?: number;
-  onClose: () => void;
-  onMove: (dx: number, dy: number) => void;
-  onResize: (dw: number, dh: number) => void;
 };
 
+const MIN_W = 200;
+const MIN_H = 100;
+
 const ResizableDraggablePanel: React.FC<Props> = ({
-  id, title, content, x, y, width, height, minWidth, minHeight, onClose, onMove, onResize
+  x,
+  y,
+  width,
+  height,
+  title,
+  content,
+  onMove,
+  onResize,
+  onClose,
+  minWidth,
+  minHeight,
 }) => {
-  const dragStart = useRef<{ x: number; y: number } | null>(null);
-  const resizeStart = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
+  const effectiveMinW = minWidth ?? MIN_W;
+  const effectiveMinH = minHeight ?? MIN_H;
 
-  // Drag logic
-  const handleMouseDown = (e: React.MouseEvent) => {
-    dragStart.current = { x: e.clientX, y: e.clientY };
-    window.dispatchEvent(new Event("panel-drag-start")); // Show grid overlay
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      if (dragStart.current) {
-        const dx = moveEvent.clientX - dragStart.current.x;
-        const dy = moveEvent.clientY - dragStart.current.y;
-        onMove(dx, dy);
-        dragStart.current = { x: moveEvent.clientX, y: moveEvent.clientY };
-      }
+  const movingRef = useRef(false);
+  const lastMouseX = useRef(0);
+  const lastMouseY = useRef(0);
+
+  const resizingRef = useRef(false);
+  const lastResX = useRef(0);
+  const lastResY = useRef(0);
+
+  const [preview, setPreview] = useState<{
+    w: number;
+    h: number;
+    active: boolean;
+  }>({
+    w: width,
+    h: height,
+    active: false,
+  });
+
+  useEffect(() => {
+    setPreview((p) => ({ ...p, w: width, h: height }));
+  }, [width, height]);
+
+  const onHeaderMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    movingRef.current = true;
+    lastMouseX.current = e.clientX;
+    lastMouseY.current = e.clientY;
+    document.body.style.userSelect = 'none';
+
+    const onMoveWindow = (mv: MouseEvent) => {
+      if (!movingRef.current) return;
+      const dx = mv.clientX - lastMouseX.current;
+      const dy = mv.clientY - lastMouseY.current;
+      lastMouseX.current = mv.clientX;
+      lastMouseY.current = mv.clientY;
+      onMove?.(dx, dy);
     };
-    const handleMouseUp = () => {
-      dragStart.current = null;
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-      window.dispatchEvent(new Event("panel-drag-end")); // Hide grid overlay
+    const onUpWindow = () => {
+      movingRef.current = false;
+      document.body.style.userSelect = '';
+      window.removeEventListener('mousemove', onMoveWindow);
+      window.removeEventListener('mouseup', onUpWindow);
     };
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+
+    window.addEventListener('mousemove', onMoveWindow);
+    window.addEventListener('mouseup', onUpWindow);
   };
 
-  // Resize logic
-  const handleResizeMouseDown = (e: React.MouseEvent) => {
+  const onResizeMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    resizeStart.current = { x: e.clientX, y: e.clientY, width, height };
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      if (resizeStart.current) {
-        const dw = moveEvent.clientX - resizeStart.current.x;
-        const dh = moveEvent.clientY - resizeStart.current.y;
-        onResize(dw, dh);
-      }
+    resizingRef.current = true;
+    lastResX.current = e.clientX;
+    lastResY.current = e.clientY;
+    setPreview({ w: width, h: height, active: true });
+    document.body.style.userSelect = 'none';
+
+    const onMoveWindow = (mv: MouseEvent) => {
+      if (!resizingRef.current) return;
+      const dx = mv.clientX - lastResX.current;
+      const dy = mv.clientY - lastResY.current;
+      lastResX.current = mv.clientX;
+      lastResY.current = mv.clientY;
+
+      onResize?.(dx, dy);
+
+      setPreview((prev) => {
+        const newW = Math.max(effectiveMinW, Math.round(prev.w + dx));
+        const newH = Math.max(effectiveMinH, Math.round(prev.h + dy));
+        return { w: newW, h: newH, active: true };
+      });
     };
-    const handleMouseUp = () => {
-      resizeStart.current = null;
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+
+    const onUpWindow = () => {
+      resizingRef.current = false;
+      setPreview((p) => ({ ...p, active: false }));
+      document.body.style.userSelect = '';
+      window.removeEventListener('mousemove', onMoveWindow);
+      window.removeEventListener('mouseup', onUpWindow);
     };
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+
+    window.addEventListener('mousemove', onMoveWindow);
+    window.addEventListener('mouseup', onUpWindow);
   };
+
+  useEffect(() => {
+    if (!resizingRef.current) {
+      setPreview({ w: width, h: height, active: false });
+    }
+  }, [width, height]);
 
   return (
     <div
@@ -71,70 +133,104 @@ const ResizableDraggablePanel: React.FC<Props> = ({
         top: y,
         width,
         height,
-        minWidth,
-        minHeight,
-        background: '#232b3e',
-        borderRadius: 8,
-        boxShadow: '0 2px 8px #0006',
+        boxSizing: 'border-box',
+        background: '#fff',
+        borderRadius: 6,
+        boxShadow: '0 6px 18px rgba(0,0,0,0.35)',
         overflow: 'hidden',
-        zIndex: 1000,
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #3e4a6b',
+        zIndex: 3000,
       }}
     >
       <div
+        onMouseDown={onHeaderMouseDown}
         style={{
-          cursor: 'move',
-          background: '#2b3556',
+          height: 40,
+          background: 'linear-gradient(90deg,#3e4a6b,#2b3556)',
           color: '#fff',
-          padding: '8px 16px',
-          fontWeight: 700,
-          fontFamily: 'monospace',
-          fontSize: 16,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          padding: '0 12px',
+          cursor: 'grab',
           userSelect: 'none',
         }}
-        onMouseDown={handleMouseDown}
       >
-        <span>{title}</span>
+        <div style={{ fontWeight: 700 }}>{title}</div>
+        <div style={{ flex: 1 }} />
         <button
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose?.();
+          }}
           style={{
             background: 'transparent',
             border: 'none',
             color: '#fff',
-            fontSize: 18,
             cursor: 'pointer',
-            marginLeft: 8,
+            fontSize: 16,
           }}
-          aria-label="Close"
         >
-          ×
+          ✕
         </button>
       </div>
-      <div style={{ flex: 1, overflow: 'auto', background: '#232b3e' }}>
+
+      <div
+        style={{ padding: 12, height: `calc(100% - 40px)`, overflow: 'auto' }}
+      >
         {content}
       </div>
+
       <div
+        onMouseDown={onResizeMouseDown}
         style={{
           position: 'absolute',
-          right: 0,
-          bottom: 0,
+          right: 6,
+          bottom: 6,
           width: 18,
           height: 18,
           cursor: 'nwse-resize',
-          background: 'transparent',
-          zIndex: 10,
+          zIndex: 4000,
+          borderRadius: 3,
+          background: 'rgba(0,0,0,0.08)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
-        onMouseDown={handleResizeMouseDown}
+        aria-hidden
       >
-        <svg width="18" height="18">
-          <polyline points="3,15 15,15 15,3" fill="none" stroke="#7c5fe6" strokeWidth="2"/>
+        <svg
+          width='12'
+          height='12'
+          viewBox='0 0 12 12'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <path
+            d='M2 10L10 2M6 10L10 6M2 6L6 2'
+            stroke='rgba(0,0,0,0.35)'
+            strokeWidth='1.2'
+            strokeLinecap='round'
+          />
         </svg>
       </div>
+
+      {preview.active && (
+        <div
+          style={{
+            pointerEvents: 'none',
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: preview.w,
+            height: preview.h,
+            boxSizing: 'border-box',
+            borderRadius: 6,
+            border: '2px dashed rgba(100,150,255,0.9)',
+            background: 'rgba(100,150,255,0.08)',
+            zIndex: 5000,
+            transition: 'none',
+          }}
+        />
+      )}
     </div>
   );
 };

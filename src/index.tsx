@@ -31,8 +31,8 @@ type OpenPanel = {
 const getDefaultPanelPosition = (count: number) => ({
   x: 60 + count * 40,
   y: 60 + count * 40,
-  width: 700,  
-  height: 420, 
+  width: 700,
+  height: 420,
 });
 
 const GRID_ROWS = 2;
@@ -75,6 +75,8 @@ const INACTIVITY_LIMIT = 5 * 60 * 1000; // 5 minutes
 
 const THEME_KEY = 'theme'; // localStorage key
 
+const RESIZE_SENSITIVITY = 1;
+
 /**
  * Gets the initial theme from localStorage or prompts the user.
  * @returns {'dark' | 'light'}
@@ -83,7 +85,9 @@ const getInitialTheme = () => {
   const stored = localStorage.getItem(THEME_KEY);
   if (stored === 'dark' || stored === 'light') return stored;
   // Ask user if not set
-  const userPref = window.confirm('Use dark theme? Click OK for dark, Cancel for light.');
+  const userPref = window.confirm(
+    'Use dark theme? Click OK for dark, Cancel for light.'
+  );
   const theme = userPref ? 'dark' : 'light';
   localStorage.setItem(THEME_KEY, theme);
   return theme;
@@ -97,7 +101,9 @@ const App: FC = () => {
   const [dragNavPanelKey, setDragNavPanelKey] = useState<string | null>(null);
   const [navOpen, setNavOpen] = useState<boolean>(false);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-  const [dropCell, setDropCell] = useState<{ row: number; col: number } | null>(null);
+  const [dropCell, setDropCell] = useState<{ row: number; col: number } | null>(
+    null
+  );
   const [theme, setTheme] = useState<'dark' | 'light'>(getInitialTheme());
 
   // Drag from nav: set key in dataTransfer
@@ -113,7 +119,10 @@ const App: FC = () => {
   /**
    * Called by MainWorkspace to update container size and drop cell.
    */
-  const handleGridDropInfo = (info: { cell: { row: number; col: number } | null, size: { width: number; height: number } }) => {
+  const handleGridDropInfo = (info: {
+    cell: { row: number; col: number } | null;
+    size: { width: number; height: number };
+  }) => {
     setDropCell(info.cell);
     setContainerSize(info.size);
   };
@@ -125,10 +134,13 @@ const App: FC = () => {
     e.preventDefault();
     const key = e.dataTransfer.getData('panelKey');
     if (!key) return;
-    const panelDef = panelList.find(p => p.key === key);
+    const panelDef = panelList.find((p) => p.key === key);
     if (!panelDef) return;
     const id = `${key}-${Date.now()}`;
-    let x = 60, y = NAV_BAR_HEIGHT + 10, width = 700, height = 420;
+    let x = 60,
+      y = NAV_BAR_HEIGHT + 10,
+      width = 700,
+      height = 420;
     if (dropCell && containerSize.width && containerSize.height) {
       // Subtract nav bar height from available height for grid
       const availableHeight = containerSize.height - NAV_BAR_HEIGHT;
@@ -172,19 +184,15 @@ const App: FC = () => {
    * Closes a panel by id.
    */
   const handleClose = (id: string) => {
-    setOpenPanels(openPanels.filter(p => p.id !== id));
+    setOpenPanels(openPanels.filter((p) => p.id !== id));
   };
 
   /**
    * Moves a panel by delta x and y.
    */
   const handlePanelMove = (id: string, dx: number, dy: number) => {
-    setOpenPanels(panels =>
-      panels.map(p =>
-        p.id === id
-          ? { ...p, x: p.x + dx, y: p.y + dy }
-          : p
-      )
+    setOpenPanels((panels) =>
+      panels.map((p) => (p.id === id ? { ...p, x: p.x + dx, y: p.y + dy } : p))
     );
   };
 
@@ -192,10 +200,17 @@ const App: FC = () => {
    * Resizes a panel by delta width and height.
    */
   const handlePanelResize = (id: string, dw: number, dh: number) => {
-    setOpenPanels(panels =>
-      panels.map(p =>
+    const scaledDw = Math.round(dw * RESIZE_SENSITIVITY);
+    const scaledDh = Math.round(dh * RESIZE_SENSITIVITY);
+
+    setOpenPanels((panels) =>
+      panels.map((p) =>
         p.id === id
-          ? { ...p, width: Math.max(200, p.width + dw), height: Math.max(100, p.height + dh) }
+          ? {
+              ...p,
+              width: Math.max(200, p.width + scaledDw),
+              height: Math.max(100, p.height + scaledDh),
+            }
           : p
       )
     );
@@ -214,14 +229,14 @@ const App: FC = () => {
     };
 
     const activityEvents = ['mousemove', 'keydown', 'mousedown', 'touchstart'];
-    activityEvents.forEach(event =>
+    activityEvents.forEach((event) =>
       window.addEventListener(event, resetTimer)
     );
     resetTimer();
 
     return () => {
       if (timer) clearTimeout(timer);
-      activityEvents.forEach(event =>
+      activityEvents.forEach((event) =>
         window.removeEventListener(event, resetTimer)
       );
     };
@@ -237,7 +252,7 @@ const App: FC = () => {
    * Toggles the application theme between dark and light.
    */
   const handleThemeToggle = () => {
-    setTheme(prev => {
+    setTheme((prev) => {
       const next = prev === 'dark' ? 'light' : 'dark';
       localStorage.setItem(THEME_KEY, next);
       return next;
@@ -245,7 +260,10 @@ const App: FC = () => {
   };
 
   return (
-    <div className={`app-root theme-${theme}`} style={{ display: 'flex', height: '100vh' }}>
+    <div
+      className={`app-root theme-${theme}`}
+      style={{ display: 'flex', height: '100vh' }}
+    >
       {/* Navigation Bar */}
       {navOpen && (
         <nav
@@ -261,15 +279,17 @@ const App: FC = () => {
             boxSizing: 'border-box',
           }}
         >
-          <ul style={{
-            listStyle: 'none',
-            padding: 0,
-            margin: 0,
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}>
+          <ul
+            style={{
+              listStyle: 'none',
+              padding: 0,
+              margin: 0,
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
             {panelList.map((panel) => (
               <li
                 key={panel.key}
@@ -277,7 +297,8 @@ const App: FC = () => {
                   marginBottom: 16,
                   cursor: 'grab',
                   fontWeight: 'normal',
-                  background: dragNavPanelKey === panel.key ? '#353b4a' : undefined,
+                  background:
+                    dragNavPanelKey === panel.key ? '#353b4a' : undefined,
                   padding: 8,
                   borderRadius: 10,
                   display: 'flex',
@@ -305,14 +326,16 @@ const App: FC = () => {
                     <AboutIcon />
                   ) : null}
                 </span>
-                <span style={{
-                  width: '100%',
-                  textAlign: 'center', // Center text
-                  fontSize: 13,
-                  fontWeight: 500,
-                  lineHeight: 1.2,
-                  wordBreak: 'break-word',
-                }}>
+                <span
+                  style={{
+                    width: '100%',
+                    textAlign: 'center', // Center text
+                    fontSize: 13,
+                    fontWeight: 500,
+                    lineHeight: 1.2,
+                    wordBreak: 'break-word',
+                  }}
+                >
                   {panel.title}
                 </span>
               </li>
@@ -378,36 +401,54 @@ const App: FC = () => {
                 transition: 'background 0.2s',
                 boxShadow: navOpen ? '0 2px 8px #0002' : undefined,
               }}
-              aria-label="Toggle navigation"
+              aria-label='Toggle navigation'
             >
               <span style={{ display: 'inline-block', width: 28, height: 28 }}>
                 {navOpen ? (
                   // X icon
-                  <svg width="28" height="28" viewBox="0 0 28 28">
-                    <line x1="7" y1="7" x2="21" y2="21" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
-                    <line x1="21" y1="7" x2="7" y2="21" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
+                  <svg width='28' height='28' viewBox='0 0 28 28'>
+                    <line
+                      x1='7'
+                      y1='7'
+                      x2='21'
+                      y2='21'
+                      stroke='#fff'
+                      strokeWidth='2.5'
+                      strokeLinecap='round'
+                    />
+                    <line
+                      x1='21'
+                      y1='7'
+                      x2='7'
+                      y2='21'
+                      stroke='#fff'
+                      strokeWidth='2.5'
+                      strokeLinecap='round'
+                    />
                   </svg>
                 ) : (
                   // Hamburger icon
-                  <svg width="28" height="28" viewBox="0 0 28 28">
-                    <rect y="6" width="28" height="3" rx="1.5" fill="#fff" />
-                    <rect y="13" width="28" height="3" rx="1.5" fill="#fff" />
-                    <rect y="20" width="28" height="3" rx="1.5" fill="#fff" />
+                  <svg width='28' height='28' viewBox='0 0 28 28'>
+                    <rect y='6' width='28' height='3' rx='1.5' fill='#fff' />
+                    <rect y='13' width='28' height='3' rx='1.5' fill='#fff' />
+                    <rect y='20' width='28' height='3' rx='1.5' fill='#fff' />
                   </svg>
                 )}
               </span>
             </button>
             {/* App title */}
-            <span style={{
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              fontSize: 22,
-              letterSpacing: 2,
-              color: '#fff',
-              textShadow: '0 1px 2px #0006',
-              userSelect: 'none',
-              textTransform: 'uppercase',
-            }}>
+            <span
+              style={{
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                fontSize: 22,
+                letterSpacing: 2,
+                color: '#fff',
+                textShadow: '0 1px 2px #0006',
+                userSelect: 'none',
+                textTransform: 'uppercase',
+              }}
+            >
               fruteria
             </span>
             {/* Spacer to push UserProfile to the right */}
@@ -425,8 +466,11 @@ const App: FC = () => {
             </div>
           </div>
           {openPanels.length === 0 ? (
-            <div style={{ color: '#888', textAlign: 'center', marginTop: '2rem' }}>
-              No panels open.<br />
+            <div
+              style={{ color: '#888', textAlign: 'center', marginTop: '2rem' }}
+            >
+              No panels open.
+              <br />
               Drag one from the navigation bar.
             </div>
           ) : (
@@ -470,14 +514,14 @@ const Root: React.FC = () => {
 // (You can move this logic inside LoginComponent if you prefer)
 const origLoginComponent = LoginComponent;
 (LoginComponent as any) = (props: any) => {
-  const [_, forceUpdate] = React.useReducer(x => x + 1, 0);
+  const [_, forceUpdate] = React.useReducer((x) => x + 1, 0);
   return React.createElement(origLoginComponent, {
     ...props,
     onLoginSuccess: () => {
       localStorage.setItem('isLoggedIn', 'true');
       window.dispatchEvent(new Event('login-success'));
       forceUpdate();
-    }
+    },
   });
 };
 

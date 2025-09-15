@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Button, Typography, Switch, Icon } from 'antd';
 
 // Styles
@@ -57,7 +58,11 @@ interface UserPopoverProps {
 }
 
 // Update the component signature:
-const UserProfile: React.FC<UserProfileProps> = ({ onLogout, onThemeToggle, theme }) => {
+const UserProfile: React.FC<UserProfileProps> = ({
+  onLogout,
+  onThemeToggle,
+  theme,
+}) => {
   const [visible, setVisible] = useState(false);
 
   // You can fetch/display real user info here if available
@@ -77,31 +82,39 @@ const UserProfile: React.FC<UserProfileProps> = ({ onLogout, onThemeToggle, them
     theme,
   }) => (
     <div style={popoverContainerStyle}>
-      <Typography.Text strong style={{ fontSize: 18, color: '#f5f6fa' }}>{userInfo.name}</Typography.Text>
+      <Typography.Text strong style={{ fontSize: 18, color: '#f5f6fa' }}>
+        {userInfo.name}
+      </Typography.Text>
       <br />
-      <Typography.Text type="secondary" style={{ fontSize: 14, color: '#b0b4c1' }}>{userInfo.email}</Typography.Text>
+      <Typography.Text
+        type='secondary'
+        style={{ fontSize: 14, color: '#b0b4c1' }}
+      >
+        {userInfo.email}
+      </Typography.Text>
       <div style={dividerStyle} />
-      <div style={{ marginBottom: 16, fontSize: 15, color: '#b0b4c1' }}>Do you want to log out?</div>
+      <div style={{ marginBottom: 16, fontSize: 15, color: '#b0b4c1' }}>
+        Do you want to log out?
+      </div>
       <Button
-        type="primary"
+        type='primary'
         block
         style={logoutButtonStyle}
-        onClick={() => { onCancel(); onLogout(); }}
+        onClick={() => {
+          onCancel();
+          onLogout();
+        }}
       >
         Log out
       </Button>
-      <Button
-        block
-        style={cancelButtonStyle}
-        onClick={onCancel}
-      >
+      <Button block style={cancelButtonStyle} onClick={onCancel}>
         Cancel
       </Button>
       {onThemeToggle && (
         <div style={themeSwitchStyle}>
           <Switch
-            checkedChildren={<Icon type="check" />}
-            unCheckedChildren={<Icon type="close" />}
+            checkedChildren={<Icon type='check' />}
+            unCheckedChildren={<Icon type='close' />}
             checked={theme === 'dark'}
             onChange={onThemeToggle}
             defaultChecked
@@ -115,12 +128,19 @@ const UserProfile: React.FC<UserProfileProps> = ({ onLogout, onThemeToggle, them
   );
 
   return (
-    <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div
+      className='top-bar'
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
       {/* ...existing code for left/middle of top bar... */}
       <div style={{ marginLeft: 'auto' }}>
         <Button
-          shape="circle"
-          icon="user"
+          shape='circle'
+          icon='user'
           onClick={handleOpen}
           style={{
             background: '#232634',
@@ -129,37 +149,39 @@ const UserProfile: React.FC<UserProfileProps> = ({ onLogout, onThemeToggle, them
           }}
         />
       </div>
-      {visible && (
-        <div
-          style={{
-            position: 'fixed',
-            zIndex: 9999,
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(23, 25, 34, 0.85)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'background 0.2s',
-          }}
-          onClick={handleClose}
-        >
+      {visible &&
+        createPortal(
           <div
-            style={{ pointerEvents: 'auto' }}
-            onClick={e => e.stopPropagation()}
+            style={{
+              position: 'fixed',
+              zIndex: 9999,
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(23, 25, 34, 0.85)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background 0.2s',
+            }}
+            onClick={handleClose}
           >
-            <UserPopover
-              userInfo={userInfo}
-              onLogout={onLogout}
-              onCancel={handleClose}
-              onThemeToggle={onThemeToggle}
-              theme={theme}
-            />
-          </div>
-        </div>
-      )}
+            <div
+              style={{ pointerEvents: 'auto' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <UserPopover
+                userInfo={userInfo}
+                onLogout={onLogout}
+                onCancel={handleClose}
+                onThemeToggle={onThemeToggle}
+                theme={theme}
+              />
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

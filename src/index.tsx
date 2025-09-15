@@ -528,11 +528,7 @@ const origLoginComponent = LoginComponent;
 
 const rootEl = document.getElementById('root');
 if (rootEl) {
-  createRoot(rootEl).render(
-    <StrictMode>
-      <Root />
-    </StrictMode>
-  );
+  createRoot(rootEl).render(<Root />);
 } else {
   console.error('Root element not found');
 }

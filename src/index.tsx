@@ -1,6 +1,6 @@
 import 'antd/dist/antd.css';
 import React, { useState, DragEvent, FC, StrictMode, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import ResizableDraggablePanel from './components/ResizableDraggablePanel';
 import TermsIcon from './Icons/TermsIcon';
 import AboutIcon from './Icons/AboutIcon';
@@ -525,9 +525,13 @@ const origLoginComponent = LoginComponent;
   });
 };
 
-ReactDOM.render(
-  <StrictMode>
-    <Root />
-  </StrictMode>,
-  document.getElementById('root')
-);
+const rootEl = document.getElementById('root');
+if (rootEl) {
+  createRoot(rootEl).render(
+    <StrictMode>
+      <Root />
+    </StrictMode>
+  );
+} else {
+  console.error('Root element not found');
+}

@@ -1,4 +1,5 @@
 import 'antd/dist/antd.css';
+import './index.css';
 import React, { useState, DragEvent, FC, StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import ResizableDraggablePanel from './components/ResizableDraggablePanel';
@@ -269,7 +270,7 @@ const App: FC = () => {
         <nav
           style={{
             width: 90, // Increased width
-            background: '#232b3e',
+            background: 'var(--side-nav-bg)',
             padding: '0.5rem 0.25rem',
             borderRight: '1px solid #3e4a6b',
             display: 'flex',
@@ -356,7 +357,7 @@ const App: FC = () => {
           style={{
             flex: 1,
             position: 'relative',
-            background: '#232b3e',
+            background: 'var(--app-bg)',
             overflow: 'hidden',
             height: '100%',
             width: '100%',
@@ -366,8 +367,8 @@ const App: FC = () => {
           <div
             style={{
               width: '100%',
-              background: 'linear-gradient(90deg, #2b3556 0%, #3e4a6b 100%)',
-              color: '#fff',
+              background: 'var(--top-nav-bg)',
+              color: 'var(--panel-header-fg)',
               padding: '0.5rem 1.5rem',
               fontWeight: 600,
               fontSize: 20,

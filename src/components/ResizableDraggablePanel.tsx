@@ -15,8 +15,8 @@ type Props = {
   minHeight?: number;
 };
 
-const MIN_W = 200;
-const MIN_H = 100;
+const DEFAULT_MIN_W = 200;
+const DEFAULT_MIN_H = 100;
 
 const ResizableDraggablePanel: React.FC<Props> = ({
   x,
@@ -31,8 +31,8 @@ const ResizableDraggablePanel: React.FC<Props> = ({
   minWidth,
   minHeight,
 }) => {
-  const effectiveMinW = minWidth ?? MIN_W;
-  const effectiveMinH = minHeight ?? MIN_H;
+  const effectiveMinW = minWidth ?? DEFAULT_MIN_W;
+  const effectiveMinH = minHeight ?? DEFAULT_MIN_H;
 
   const movingRef = useRef(false);
   const lastMouseX = useRef(0);
@@ -134,7 +134,7 @@ const ResizableDraggablePanel: React.FC<Props> = ({
         width,
         height,
         boxSizing: 'border-box',
-        background: '#fff',
+        background: 'var(--panel-bg, #fff)',
         borderRadius: 6,
         boxShadow: '0 6px 18px rgba(0,0,0,0.35)',
         overflow: 'hidden',
@@ -145,8 +145,9 @@ const ResizableDraggablePanel: React.FC<Props> = ({
         onMouseDown={onHeaderMouseDown}
         style={{
           height: 40,
-          background: 'linear-gradient(90deg,#3e4a6b,#2b3556)',
-          color: '#fff',
+          background:
+            'var(--panel-header-bg, linear-gradient(90deg,#3e4a6b,#2b3556))',
+          color: 'var(--panel-header-fg, #fff)',
           display: 'flex',
           alignItems: 'center',
           padding: '0 12px',
@@ -157,14 +158,14 @@ const ResizableDraggablePanel: React.FC<Props> = ({
         <div style={{ fontWeight: 700 }}>{title}</div>
         <div style={{ flex: 1 }} />
         <button
-          onClick={(e) => {
-            e.stopPropagation();
+          onClick={(ev) => {
+            ev.stopPropagation();
             onClose?.();
           }}
           style={{
             background: 'transparent',
             border: 'none',
-            color: '#fff',
+            color: 'var(--panel-header-fg, #fff)',
             cursor: 'pointer',
             fontSize: 16,
           }}
@@ -174,7 +175,7 @@ const ResizableDraggablePanel: React.FC<Props> = ({
       </div>
 
       <div
-        style={{ padding: 12, height: `calc(100% - 40px)`, overflow: 'auto' }}
+        style={{ padding: 12, height: 'calc(100% - 40px)', overflow: 'auto' }}
       >
         {content}
       </div>
@@ -190,7 +191,7 @@ const ResizableDraggablePanel: React.FC<Props> = ({
           cursor: 'nwse-resize',
           zIndex: 4000,
           borderRadius: 3,
-          background: 'rgba(0,0,0,0.08)',
+          background: 'rgba(0,0,0,0.06)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

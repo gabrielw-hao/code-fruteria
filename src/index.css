@@ -1,0 +1,26 @@
+:root {
+  --app-bg: #fff;
+  --app-fg: #000;
+  --panel-bg: #fff;
+  --panel-header-bg: linear-gradient(90deg, #3e4a6b, #2b3556);
+  --panel-header-fg: #fff;
+  --side-nav-bg: #232b3e;
+  --top-nav-bg: linear-gradient(90deg, #2b3556 0%, #3e4a6b 100%);
+}
+
+/* dark theme */
+.theme-dark {
+  --app-bg: #0b0f14;
+  --app-fg: #e8eef8;
+  --panel-bg: #0f1720;
+  --panel-header-bg: linear-gradient(90deg, #1f2636, #2b3556);
+  --panel-header-fg: #fff;
+  --side-nav-bg: #232b3e;
+  --top-nav-bg: linear-gradient(90deg, #1f2636, #2b3556);
+}
+
+/* use variables in root app container if you have inline styles */
+.app-root {
+  background: var(--app-bg);
+  color: var(--app-fg);
+}

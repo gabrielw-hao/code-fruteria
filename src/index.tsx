@@ -1,6 +1,6 @@
 import 'antd/dist/antd.css';
 import './index.css';
-import React, { useState, DragEvent, FC, StrictMode, useEffect } from 'react';
+import React, { useState, DragEvent, FC, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import ResizableDraggablePanel from './components/ResizableDraggablePanel';
 import TermsIcon from './Icons/TermsIcon';
@@ -10,6 +10,15 @@ import { MainWorkspace } from './components/MainWorkspace';
 import LoginComponent from './components/LoginComponent';
 import UserProfile from './components/UserProfile';
 import { panelList } from './panelList';
+
+import { message as antdMessage } from 'antd';
+
+antdMessage.config({
+  getContainer: () => document.body,
+  top: 60,
+  duration: 2,
+  maxCount: 3,
+});
 
 /**
  * Represents an open panel's state and position.

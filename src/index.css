@@ -24,3 +24,8 @@
   background: var(--app-bg);
   color: var(--app-fg);
 }
+
+/* Ensure Ant Design message notifications are always on top */
+.ant-message {
+  z-index: 15000 !important;
+}

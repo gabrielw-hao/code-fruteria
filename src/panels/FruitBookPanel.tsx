@@ -165,7 +165,7 @@ const FruitBook: React.FC = () => {
 
   return (
     <>
-      <div style={{ padding: 0, background: '#232b3e', height: 600 }}>
+      <div style={{ padding: 0, background: '#232b3e' }}>
         <div
           style={{
             fontFamily: 'monospace',
@@ -176,6 +176,7 @@ const FruitBook: React.FC = () => {
             padding: '16px 24px 10px 24px',
             borderBottom: '1px solid #353b4a',
             letterSpacing: 1,
+            minWidth: 700,
           }}
         >
           Fruit Book
@@ -183,7 +184,7 @@ const FruitBook: React.FC = () => {
         <div
           className='ag-theme-alpine'
           style={{
-            height: 480,
+            height: 460,
             width: '100%',
             minWidth: 700,
             border: '1px solid #7c5fe6',
@@ -201,6 +202,8 @@ const FruitBook: React.FC = () => {
             onRowDoubleClicked={onRowDoubleClicked}
             getRowStyle={getRowStyle}
             suppressCellFocus={true}
+            pagination={true}
+            paginationPageSize={10}
           />
         </div>
       </div>

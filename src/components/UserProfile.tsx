@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import { createPortal } from 'react-dom';
 import { Button, Typography, Switch, Icon } from 'antd';
+import { THEME_LIGHT, THEME_DARK } from '../constants';
 
 // Styles
-const popoverContainerStyle: React.CSSProperties = {
+const popoverContainerStyle = (
+  theme?: 'dark' | 'light'
+): React.CSSProperties => ({
   minWidth: 280,
   padding: 28,
-  background: '#232634',
+  background: theme === THEME_LIGHT ? '#f5f6fa' : '#232634',
   borderRadius: 14,
   boxShadow: '0 4px 32px rgba(0,0,0,0.45)',
   textAlign: 'center',
-  color: '#f5f6fa',
-  border: '1px solid #2e3244',
+  color: theme === THEME_LIGHT ? '#232634' : '#f5f6fa',
+  border: theme === THEME_LIGHT ? '1px solid #dbe2ef' : '1px solid #2e3244',
   position: 'relative',
-};
+});
 
 const logoutButtonStyle: React.CSSProperties = {
   background: '#e74c3c',
@@ -45,24 +49,19 @@ const themeSwitchStyle: React.CSSProperties = {
 // Add these props to the component's props type/interface:
 interface UserProfileProps {
   onLogout: () => void;
-  onThemeToggle?: () => void;
-  theme?: 'dark' | 'light';
 }
 
 interface UserPopoverProps {
   userInfo: { name: string; email: string };
   onLogout: () => void;
   onCancel: () => void;
-  onThemeToggle?: () => void;
-  theme?: 'dark' | 'light';
+  onThemeToggle: () => void;
+  theme: 'dark' | 'light';
 }
 
 // Update the component signature:
-const UserProfile: React.FC<UserProfileProps> = ({
-  onLogout,
-  onThemeToggle,
-  theme,
-}) => {
+const UserProfile: React.FC<UserProfileProps> = ({ onLogout }) => {
+  const { theme, toggleTheme } = useTheme();
   const [visible, setVisible] = useState(false);
 
   // You can fetch/display real user info here if available
@@ -81,19 +80,34 @@ const UserProfile: React.FC<UserProfileProps> = ({
     onThemeToggle,
     theme,
   }) => (
-    <div style={popoverContainerStyle}>
-      <Typography.Text strong style={{ fontSize: 18, color: '#f5f6fa' }}>
+    <div style={popoverContainerStyle(theme)}>
+      <Typography.Text
+        strong
+        style={{
+          fontSize: 18,
+          color: theme === THEME_LIGHT ? '#232634' : '#f5f6fa',
+        }}
+      >
         {userInfo.name}
       </Typography.Text>
       <br />
       <Typography.Text
         type='secondary'
-        style={{ fontSize: 14, color: '#b0b4c1' }}
+        style={{
+          fontSize: 14,
+          color: theme === THEME_LIGHT ? '#23263499' : '#b0b4c1',
+        }}
       >
         {userInfo.email}
       </Typography.Text>
       <div style={dividerStyle} />
-      <div style={{ marginBottom: 16, fontSize: 15, color: '#b0b4c1' }}>
+      <div
+        style={{
+          marginBottom: 16,
+          fontSize: 15,
+          color: theme === THEME_LIGHT ? '#23263499' : '#b0b4c1',
+        }}
+      >
         Do you want to log out?
       </div>
       <Button
@@ -110,20 +124,24 @@ const UserProfile: React.FC<UserProfileProps> = ({
       <Button block style={cancelButtonStyle} onClick={onCancel}>
         Cancel
       </Button>
-      {onThemeToggle && (
-        <div style={themeSwitchStyle}>
-          <Switch
-            checkedChildren={<Icon type='check' />}
-            unCheckedChildren={<Icon type='close' />}
-            checked={theme === 'dark'}
-            onChange={onThemeToggle}
-            defaultChecked
-          />
-          <span style={{ marginLeft: 8, color: '#b0b4c1', fontSize: 14 }}>
-            {theme === 'dark' ? 'Light' : 'Dark'} Theme
-          </span>
-        </div>
-      )}
+      <div style={themeSwitchStyle}>
+        <Switch
+          checkedChildren={<Icon type='check' />}
+          unCheckedChildren={<Icon type='close' />}
+          checked={theme === 'dark'}
+          onChange={onThemeToggle}
+          defaultChecked
+        />
+        <span
+          style={{
+            marginLeft: 8,
+            color: theme === THEME_LIGHT ? '#23263499' : '#b0b4c1',
+            fontSize: 14,
+          }}
+        >
+          {theme === THEME_DARK ? 'Light' : 'Dark'} Theme
+        </span>
+      </div>
     </div>
   );
 
@@ -143,9 +161,10 @@ const UserProfile: React.FC<UserProfileProps> = ({
           icon='user'
           onClick={handleOpen}
           style={{
-            background: '#232634',
-            border: '1px solid #35394a',
-            color: '#b0b4c1',
+            background: theme === THEME_LIGHT ? '#f5f6fa' : '#232634',
+            border:
+              theme === THEME_LIGHT ? '1px solid #dbe2ef' : '1px solid #35394a',
+            color: theme === THEME_LIGHT ? '#232634' : '#b0b4c1',
           }}
         />
       </div>
@@ -175,7 +194,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                 userInfo={userInfo}
                 onLogout={onLogout}
                 onCancel={handleClose}
-                onThemeToggle={onThemeToggle}
+                onThemeToggle={toggleTheme}
                 theme={theme}
               />
             </div>

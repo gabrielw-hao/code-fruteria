@@ -1,6 +1,6 @@
 import 'antd/dist/antd.css';
 import './index.css';
-import React, { useState, DragEvent, FC, useEffect } from 'react';
+import React, { useState, DragEvent, FC, useEffect, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 import ResizableDraggablePanel from './components/ResizableDraggablePanel';
 import TermsIcon from './Icons/TermsIcon';
@@ -9,7 +9,8 @@ import FruitViewIcon from './Icons/FruitViewIcon';
 import { MainWorkspace } from './components/MainWorkspace';
 import LoginComponent from './components/LoginComponent';
 import UserProfile from './components/UserProfile';
-import { panelList } from './panelList';
+import { getPanelList } from './panelList';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 import { message as antdMessage } from 'antd';
 
@@ -33,17 +34,6 @@ type OpenPanel = {
   width: number;
   height: number;
 };
-
-/**
- * Returns the default position and size for a new panel.
- * @param count Number of currently open panels
- */
-const getDefaultPanelPosition = (count: number) => ({
-  x: 60 + count * 40,
-  y: 60 + count * 40,
-  width: 700,
-  height: 420,
-});
 
 const GRID_ROWS = 2;
 const GRID_COLS = 2;
@@ -83,38 +73,21 @@ const isLoggedIn = () => localStorage.getItem('isLoggedIn') === 'true';
 
 const INACTIVITY_LIMIT = 5 * 60 * 1000; // 5 minutes
 
-const THEME_KEY = 'theme'; // localStorage key
-
 const RESIZE_SENSITIVITY = 1;
-
-/**
- * Gets the initial theme from localStorage or prompts the user.
- * @returns {'dark' | 'light'}
- */
-const getInitialTheme = () => {
-  const stored = localStorage.getItem(THEME_KEY);
-  if (stored === 'dark' || stored === 'light') return stored;
-  // Ask user if not set
-  const userPref = window.confirm(
-    'Use dark theme? Click OK for dark, Cancel for light.'
-  );
-  const theme = userPref ? 'dark' : 'light';
-  localStorage.setItem(THEME_KEY, theme);
-  return theme;
-};
 
 /**
  * Main application component.
  */
 const App: FC = () => {
+  const { theme } = useTheme();
   const [openPanels, setOpenPanels] = useState<OpenPanel[]>([]);
+  const panelList = useMemo(() => getPanelList(), []);
   const [dragNavPanelKey, setDragNavPanelKey] = useState<string | null>(null);
   const [navOpen, setNavOpen] = useState<boolean>(false);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [dropCell, setDropCell] = useState<{ row: number; col: number } | null>(
     null
   );
-  const [theme, setTheme] = useState<'dark' | 'light'>(getInitialTheme());
 
   // Drag from nav: set key in dataTransfer
   /**
@@ -257,17 +230,6 @@ const App: FC = () => {
     document.body.classList.remove('theme-dark', 'theme-light');
     document.body.classList.add(`theme-${theme}`);
   }, [theme]);
-
-  /**
-   * Toggles the application theme between dark and light.
-   */
-  const handleThemeToggle = () => {
-    setTheme((prev) => {
-      const next = prev === 'dark' ? 'light' : 'dark';
-      localStorage.setItem(THEME_KEY, next);
-      return next;
-    });
-  };
 
   return (
     <div
@@ -470,14 +432,16 @@ const App: FC = () => {
                   localStorage.removeItem('isLoggedIn');
                   window.dispatchEvent(new Event('login-success'));
                 }}
-                onThemeToggle={handleThemeToggle}
-                theme={theme}
               />
             </div>
           </div>
           {openPanels.length === 0 ? (
             <div
-              style={{ color: '#888', textAlign: 'center', marginTop: '2rem' }}
+              style={{
+                color: '#888',
+                textAlign: 'center',
+                marginTop: '2rem',
+              }}
             >
               No panels open.
               <br />
@@ -517,7 +481,11 @@ const Root: React.FC = () => {
   if (!loggedIn) {
     return <LoginComponent />;
   }
-  return <App />;
+  return (
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  );
 };
 
 // Patch LoginComponent to set login flag and dispatch event

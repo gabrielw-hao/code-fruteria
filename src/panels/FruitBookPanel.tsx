@@ -1,10 +1,12 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import FruitEnrichmentPanel from './FruitEnrichmentPanel';
 import ReactDOM from 'react-dom';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+import { THEME_LIGHT } from '../constants';
 
 // Register ag-grid modules (required for module-based builds)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -92,7 +94,7 @@ const FRUITS = [
   },
 ];
 
-const COLUMN_DEFS: ColDef[] = [
+const getColumnDefs = (theme: 'dark' | 'light'): ColDef[] => [
   { headerName: 'ID', field: 'id', minWidth: 90 },
   { headerName: 'Fruit', field: 'name', minWidth: 120 },
   { headerName: 'Country', field: 'country', minWidth: 120 },
@@ -104,14 +106,20 @@ const COLUMN_DEFS: ColDef[] = [
     cellStyle: (params: any) => ({
       color:
         params.value === 'Available'
-          ? '#7c5fe6'
+          ? theme === THEME_LIGHT
+            ? '#5a3ec8'
+            : '#7c5fe6'
           : params.value === 'Pending'
-          ? '#ffb300'
+          ? theme === THEME_LIGHT
+            ? '#b97b00'
+            : '#ffb300'
+          : theme === THEME_LIGHT
+          ? '#c0392b'
           : '#e57373',
       fontWeight: 700,
       fontFamily: 'monospace',
       fontSize: 16,
-      background: '#232b3e',
+      background: theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
     }),
   },
   { headerName: 'Details', field: 'details', minWidth: 180 },
@@ -123,12 +131,13 @@ const DEFAULT_COL_DEF = {
 };
 
 const FruitBook: React.FC = () => {
+  const { theme } = useTheme();
   const [selectedFruit, setSelectedFruit] = useState<any | null>(null);
   const gridRef = useRef<any>(null);
 
   // Memoize grid row data and column defs
   const rowData = useMemo(() => FRUITS, []);
-  const columnDefs = useMemo(() => COLUMN_DEFS, []);
+  const columnDefs = useMemo(() => getColumnDefs(theme), [theme]);
   const defaultColDef = useMemo(() => DEFAULT_COL_DEF, []);
 
   // Handlers
@@ -149,63 +158,88 @@ const FruitBook: React.FC = () => {
         return {
           fontFamily: 'monospace',
           fontSize: 16,
-          color: '#fff',
+          color: theme === THEME_LIGHT ? '#232634' : '#fff',
           background: '#7c5fe6',
         };
       }
       return {
         fontFamily: 'monospace',
         fontSize: 16,
-        color: '#f5f5f5',
-        background: params.node.rowIndex % 2 === 0 ? '#232b3e' : '#262f47',
+        color: theme === THEME_LIGHT ? '#232634' : '#f5f5f5',
+        background:
+          theme === THEME_LIGHT
+            ? params.node.rowIndex % 2 === 0
+              ? '#f5f6fa'
+              : '#e9ecf3'
+            : params.node.rowIndex % 2 === 0
+            ? '#232b3e'
+            : '#262f47',
       };
     },
-    [selectedFruit]
+    [selectedFruit, theme]
   );
 
   return (
-    <>
-      <div style={{ padding: 0, background: '#232b3e' }}>
-        <div
-          style={{
-            fontFamily: 'monospace',
-            fontWeight: 700,
-            fontSize: 22,
-            color: '#fff',
-            background: '#232b3e',
-            padding: '16px 24px 10px 24px',
-            borderBottom: '1px solid #353b4a',
-            letterSpacing: 1,
-            minWidth: 700,
-          }}
-        >
-          Fruit Book
-        </div>
-        <div
-          className='ag-theme-alpine'
-          style={{
+    <div
+      style={{
+        padding: 0,
+        background: theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+      }}
+    >
+      <div
+        style={{
+          fontFamily: 'monospace',
+          fontWeight: 700,
+          fontSize: 22,
+          color: theme === THEME_LIGHT ? '#232634' : '#fff',
+          background: theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+          padding: '16px 24px 10px 24px',
+          borderBottom:
+            theme === THEME_LIGHT ? '1px solid #dbe2ef' : '1px solid #353b4a',
+          letterSpacing: 1,
+          minWidth: 700,
+        }}
+      >
+        Fruit Book
+      </div>
+      <div
+        className='ag-theme-alpine'
+        style={
+          {
             height: 460,
             width: '100%',
             minWidth: 700,
-            border: '1px solid #7c5fe6',
-          }}
-        >
-          <AgGridReact<any>
-            ref={gridRef}
-            rowData={rowData}
-            columnDefs={columnDefs}
-            defaultColDef={defaultColDef}
-            headerHeight={38}
-            rowHeight={38}
-            rowSelection='single'
-            onSelectionChanged={onSelectionChanged}
-            onRowDoubleClicked={onRowDoubleClicked}
-            getRowStyle={getRowStyle}
-            suppressCellFocus={true}
-            pagination={true}
-            paginationPageSize={10}
-          />
-        </div>
+            border:
+              theme === THEME_LIGHT ? '1px solid #dbe2ef' : '1px solid #7c5fe6',
+            background: theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+            '--ag-header-background-color':
+              theme === THEME_LIGHT ? '#e9ecf3' : '#232b3e',
+            '--ag-header-foreground-color':
+              theme === THEME_LIGHT ? '#232634' : '#fff',
+            '--ag-background-color':
+              theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+            '--ag-odd-row-background-color':
+              theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+            '--ag-row-hover-color':
+              theme === THEME_LIGHT ? '#e0e7ff' : '#353b4a',
+          } as React.CSSProperties
+        }
+      >
+        <AgGridReact<any>
+          ref={gridRef}
+          rowData={rowData}
+          columnDefs={columnDefs}
+          defaultColDef={defaultColDef}
+          headerHeight={38}
+          rowHeight={38}
+          rowSelection='single'
+          onSelectionChanged={onSelectionChanged}
+          onRowDoubleClicked={onRowDoubleClicked}
+          getRowStyle={getRowStyle}
+          suppressCellFocus={true}
+          pagination={true}
+          paginationPageSize={10}
+        />
       </div>
       {selectedFruit &&
         ReactDOM.createPortal(
@@ -215,7 +249,7 @@ const FruitBook: React.FC = () => {
           />,
           document.body
         )}
-    </>
+    </div>
   );
 };
 

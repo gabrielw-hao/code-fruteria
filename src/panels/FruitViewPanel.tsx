@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { MockFruitMachine, Fruit } from '../../engine/MockFruitMachine';
 // Add Ant Design imports
 import {
@@ -13,7 +13,8 @@ import {
 } from 'antd';
 const { Title, Text } = Typography;
 
-const fruitList: Fruit[] = ['apple', 'banana', 'orange'];
+const FRUIT_LIST: Fruit[] = ['apple', 'banana', 'orange'];
+
 const machine = new MockFruitMachine();
 
 export const FruitViewPanel: React.FC = () => {
@@ -22,7 +23,32 @@ export const FruitViewPanel: React.FC = () => {
   const [amount, setAmount] = useState(1);
   const [message, setMessage] = useState('');
 
-  const handleBuy = () => {
+  const fruitOptions = useMemo(
+    () =>
+      FRUIT_LIST.map((fruit) => (
+        <Select.Option key={fruit} value={fruit}>
+          {fruit}
+        </Select.Option>
+      )),
+    []
+  );
+
+  const inventoryList = useMemo(
+    () =>
+      FRUIT_LIST.map((fruit) => (
+        <List.Item key={fruit} style={{ padding: '4px 0' }}>
+          <Text style={{ color: '#bfcfff', fontSize: 16 }}>
+            {fruit}:{' '}
+            <Text strong style={{ color: '#222' }}>
+              {inventory[fruit]}
+            </Text>
+          </Text>
+        </List.Item>
+      )),
+    [inventory]
+  );
+
+  const handleBuy = useCallback(() => {
     if (machine.buy(selectedFruit, amount)) {
       setMessage(`Bought ${amount} ${selectedFruit}(s).`);
       antdMessage.success(`Bought ${amount} ${selectedFruit}(s).`);
@@ -31,14 +57,28 @@ export const FruitViewPanel: React.FC = () => {
       antdMessage.error(`Not enough ${selectedFruit}s in inventory.`);
     }
     setInventory(machine.getInventory());
-  };
+  }, [selectedFruit, amount]);
 
-  const handleSell = () => {
+  const handleSell = useCallback(() => {
     machine.sell(selectedFruit, amount);
     setMessage(`Sold ${amount} ${selectedFruit}(s).`);
     antdMessage.info(`Sold ${amount} ${selectedFruit}(s).`);
     setInventory(machine.getInventory());
-  };
+  }, [selectedFruit, amount]);
+
+  const handleFruitChange = useCallback((value) => {
+    setSelectedFruit(value as Fruit);
+  }, []);
+
+  const handleAmountChange = useCallback((value) => {
+    setAmount(Number(value));
+  }, []);
+
+  const messageColor = useMemo(() => {
+    if (message.startsWith('Bought')) return '#52c41a';
+    if (message.startsWith('Not enough')) return '#f5222d';
+    return undefined;
+  }, [message]);
 
   return (
     <div
@@ -71,26 +111,20 @@ export const FruitViewPanel: React.FC = () => {
           <Form.Item label='Fruit'>
             <Select
               value={selectedFruit}
-              onChange={(value) => {
-                setSelectedFruit(value as Fruit);
-              }}
+              onChange={handleFruitChange}
               style={{ width: 120 }}
               getPopupContainer={() => document.body}
               dropdownMatchSelectWidth={false}
               dropdownClassName='fruit-select-dropdown'
             >
-              {fruitList.map((fruit) => (
-                <Select.Option key={fruit} value={fruit}>
-                  {fruit}
-                </Select.Option>
-              ))}
+              {fruitOptions}
             </Select>
           </Form.Item>
           <Form.Item label='Amount'>
             <InputNumber
               min={1}
               value={amount}
-              onChange={(value) => setAmount(Number(value))}
+              onChange={handleAmountChange}
               style={{ width: 80 }}
             />
           </Form.Item>
@@ -105,16 +139,7 @@ export const FruitViewPanel: React.FC = () => {
         </Form>
         <div style={{ minHeight: 24, marginBottom: 16 }}>
           {message && (
-            <Text
-              strong
-              style={{
-                color: message.startsWith('Bought')
-                  ? '#52c41a'
-                  : message.startsWith('Not enough')
-                  ? '#f5222d'
-                  : undefined,
-              }}
-            >
+            <Text strong style={{ color: messageColor }}>
               {message}
             </Text>
           )}
@@ -122,20 +147,7 @@ export const FruitViewPanel: React.FC = () => {
         <Title level={4} style={{ marginBottom: 8 }}>
           Inventory
         </Title>
-        <List
-          size='small'
-          dataSource={fruitList}
-          renderItem={(fruit) => (
-            <List.Item style={{ padding: '4px 0' }}>
-              <Text style={{ color: '#bfcfff', fontSize: 16 }}>
-                {fruit}:
-                <Text strong style={{ color: '#222' }}>
-                  {inventory[fruit]}
-                </Text>
-              </Text>
-            </List.Item>
-          )}
-        />
+        <List size='small'>{inventoryList}</List>
       </Card>
     </div>
   );

@@ -138,7 +138,7 @@ const ResizableDraggablePanel: React.FC<Props> = ({
         borderRadius: 6,
         boxShadow: '0 6px 18px rgba(0,0,0,0.35)',
         overflow: 'hidden',
-        zIndex: 3000,
+        zIndex: 10,
       }}
     >
       <div
@@ -189,7 +189,7 @@ const ResizableDraggablePanel: React.FC<Props> = ({
           width: 18,
           height: 18,
           cursor: 'nwse-resize',
-          zIndex: 4000,
+          zIndex: 20,
           borderRadius: 3,
           background: 'rgba(0,0,0,0.06)',
           display: 'flex',
@@ -227,7 +227,7 @@ const ResizableDraggablePanel: React.FC<Props> = ({
             borderRadius: 6,
             border: '2px dashed rgba(100,150,255,0.9)',
             background: 'rgba(100,150,255,0.08)',
-            zIndex: 5000,
+            zIndex: 30,
             transition: 'none',
           }}
         />

@@ -384,7 +384,7 @@ const App: FC = () => {
               letterSpacing: 1,
               position: 'sticky',
               top: 0,
-              zIndex: 2000,
+              zIndex: 10,
               display: 'flex',
               alignItems: 'center',
               boxShadow: '0 2px 8px #0002',

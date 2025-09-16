@@ -154,7 +154,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
           <div
             style={{
               position: 'fixed',
-              zIndex: 9999,
+              zIndex: 100,
               top: 0,
               left: 0,
               width: '100vw',

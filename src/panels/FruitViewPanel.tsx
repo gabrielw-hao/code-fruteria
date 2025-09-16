@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
 import { MockFruitMachine, Fruit } from '../../engine/MockFruitMachine';
 // Add Ant Design imports
-import { Card, Form, Select, InputNumber, Button, Typography, List, message as antdMessage } from 'antd';
-
-const { Option } = Select;
+import {
+  Card,
+  Form,
+  Select,
+  InputNumber,
+  Button,
+  Typography,
+  List,
+  message as antdMessage,
+} from 'antd';
 const { Title, Text } = Typography;
 
 const fruitList: Fruit[] = ['apple', 'banana', 'orange'];
@@ -35,7 +42,7 @@ export const FruitViewPanel: React.FC = () => {
 
   return (
     <div
-      className="panels"
+      className='panels'
       style={{
         display: 'flex',
         justifyContent: 'center',
@@ -53,36 +60,45 @@ export const FruitViewPanel: React.FC = () => {
         }}
         bodyStyle={{ padding: 32 }}
       >
-        <Title level={3} style={{ marginTop: 0, marginBottom: 24 }}>Fruit View</Title>
+        <Title level={3} style={{ marginTop: 0, marginBottom: 24 }}>
+          Fruit View
+        </Title>
         <Form
-          layout="inline"
+          layout='inline'
           style={{ marginBottom: 16, flexWrap: 'wrap', gap: 12 }}
-          onSubmitCapture={e => e.preventDefault()}
+          onSubmitCapture={(e) => e.preventDefault()}
         >
-          <Form.Item label="Fruit">
+          <Form.Item label='Fruit'>
             <Select
               value={selectedFruit}
-              onChange={value => setSelectedFruit(value)}
+              onChange={(value) => {
+                setSelectedFruit(value as Fruit);
+              }}
               style={{ width: 120 }}
+              getPopupContainer={() => document.body}
+              dropdownMatchSelectWidth={false}
+              dropdownClassName='fruit-select-dropdown'
             >
-              {fruitList.map(fruit => (
-                <Option key={fruit} value={fruit}>{fruit}</Option>
+              {fruitList.map((fruit) => (
+                <Select.Option key={fruit} value={fruit}>
+                  {fruit}
+                </Select.Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item label="Amount">
+          <Form.Item label='Amount'>
             <InputNumber
               min={1}
               value={amount}
-              onChange={value => setAmount(Number(value))}
+              onChange={(value) => setAmount(Number(value))}
               style={{ width: 80 }}
             />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" onClick={handleBuy}>
+            <Button type='primary' onClick={handleBuy}>
               Buy
             </Button>
-            <Button type="default" onClick={handleSell}>
+            <Button type='default' onClick={handleSell}>
               Sell
             </Button>
           </Form.Item>
@@ -96,21 +112,26 @@ export const FruitViewPanel: React.FC = () => {
                   ? '#52c41a'
                   : message.startsWith('Not enough')
                   ? '#f5222d'
-                  : undefined
+                  : undefined,
               }}
             >
               {message}
             </Text>
           )}
         </div>
-        <Title level={4} style={{ marginBottom: 8 }}>Inventory</Title>
+        <Title level={4} style={{ marginBottom: 8 }}>
+          Inventory
+        </Title>
         <List
-          size="small"
+          size='small'
           dataSource={fruitList}
-          renderItem={fruit => (
+          renderItem={(fruit) => (
             <List.Item style={{ padding: '4px 0' }}>
               <Text style={{ color: '#bfcfff', fontSize: 16 }}>
-                {fruit}: <Text strong style={{ color: '#222' }}>{inventory[fruit]}</Text>
+                {fruit}:
+                <Text strong style={{ color: '#222' }}>
+                  {inventory[fruit]}
+                </Text>
               </Text>
             </List.Item>
           )}

@@ -20,9 +20,6 @@ antdMessage.config({
   maxCount: 3,
 });
 
-/**
- * Represents an open panel's state and position.
- */
 type OpenPanel = {
   id: string;
   key: string;
@@ -33,9 +30,6 @@ type OpenPanel = {
   width: number;
   height: number;
 };
-
-const GRID_ROWS = 2;
-const GRID_COLS = 2;
 
 /**
  * Calculates the position and size of a grid cell.
@@ -50,10 +44,12 @@ const getGridCellPosition = (
   col: number,
   containerWidth: number,
   containerHeight: number,
-  navBarHeight: number
+  navBarHeight: number,
+  gridRows: number,
+  gridCols: number
 ) => {
-  const cellWidth = containerWidth / GRID_COLS;
-  const cellHeight = containerHeight / GRID_ROWS;
+  const cellWidth = containerWidth / gridCols;
+  const cellHeight = containerHeight / gridRows;
   return {
     x: Math.round(col * cellWidth),
     y: Math.round(row * cellHeight + navBarHeight),
@@ -87,6 +83,14 @@ const App: FC = () => {
   const [dropCell, setDropCell] = useState<{ row: number; col: number } | null>(
     null
   );
+
+  // Grid layout state
+  // layoutType: '4-2x2', '6-2x3', '6-3x2'
+  const [gridLayout, setGridLayout] = useState<'4-2x2' | '6-2x3' | '6-3x2'>(
+    '4-2x2'
+  );
+  const gridRows = gridLayout === '4-2x2' ? 2 : gridLayout === '6-2x3' ? 2 : 3;
+  const gridCols = gridLayout === '4-2x2' ? 2 : gridLayout === '6-2x3' ? 3 : 2;
 
   // Drag from nav: set key in dataTransfer
   /**
@@ -132,7 +136,9 @@ const App: FC = () => {
         dropCell.col,
         containerSize.width,
         availableHeight,
-        NAV_BAR_HEIGHT
+        NAV_BAR_HEIGHT,
+        gridRows,
+        gridCols
       );
       // Clamp width/height to not exceed window
       width = Math.min(pos.width, containerSize.width);
@@ -324,8 +330,8 @@ const App: FC = () => {
         onDrop={onMainDrop}
         onDragOver={onMainDragOver}
         onGridDropInfo={handleGridDropInfo}
-        gridRows={GRID_ROWS}
-        gridCols={GRID_COLS}
+        gridRows={gridRows}
+        gridCols={gridCols}
       >
         <main
           style={{
@@ -353,7 +359,6 @@ const App: FC = () => {
               display: 'flex',
               alignItems: 'center',
               boxShadow: '0 2px 8px #0002',
-              minHeight: NAV_BAR_HEIGHT,
               borderBottom: '1px solid #3e4a6b',
             }}
           >
@@ -428,6 +433,32 @@ const App: FC = () => {
             </span>
             {/* Spacer to push UserProfile to the right */}
             <div style={{ flex: 1 }} />
+            {/* Grid Layout Selector at top right */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                marginRight: 16,
+              }}
+            >
+              <label
+                htmlFor='grid-layout-select'
+                style={{ fontWeight: 500, color: '#fff' }}
+              >
+                Grid Layout:
+              </label>
+              <select
+                id='grid-layout-select'
+                value={gridLayout}
+                onChange={(e) => setGridLayout(e.target.value as any)}
+                style={{ fontSize: 15, padding: '2px 8px', borderRadius: 4 }}
+              >
+                <option value='4-2x2'>4 Grid (2 x 2)</option>
+                <option value='6-2x3'>6 Grid (2 x 3)</option>
+                <option value='6-3x2'>6 Grid (3 x 2)</option>
+              </select>
+            </div>
             {/* UserProfile on the right */}
             <div style={{ marginRight: 32 }}>
               <UserProfile

@@ -5,6 +5,7 @@ interface GridDropOverlayProps {
   cols: number;
   activeCell: { row: number; col: number } | null;
   visible: boolean;
+  top?: number; // navbar height offset
 }
 
 export const GridDropOverlay: React.FC<GridDropOverlayProps> = ({
@@ -12,26 +13,26 @@ export const GridDropOverlay: React.FC<GridDropOverlayProps> = ({
   cols,
   activeCell,
   visible,
+  top = 0,
 }) => {
   // Prevent grid overlay from showing if a mouse event is triggered by a click (like closing a panel)
   // Only show overlay for drag events (pointerEvents: 'none' disables overlay for clicks)
-  return (
+  return visible ? (
     <div
       style={{
         position: 'absolute',
-        top: 0,
+        top,
         left: 0,
         right: 0,
-        bottom: 0,
-        pointerEvents: visible ? 'none' : 'none', // Always "none" to avoid interfering with clicks
+        height: `calc(100% - ${top}px)`,
+        pointerEvents: 'none',
         display: 'grid',
         gridTemplateRows: `repeat(${rows}, 1fr)`,
         gridTemplateColumns: `repeat(${cols}, 1fr)`,
-        zIndex: 10,
-        background: visible ? 'rgba(30,40,80,0.18)' : 'transparent',
-        opacity: visible ? 1 : 0,
+        zIndex: 2000,
+        background: 'rgba(30,40,80,0.18)',
+        opacity: 1,
         transition: 'background 0.1s, opacity 0.1s',
-        // Optionally, add userSelect: 'none' to avoid accidental text selection
         userSelect: 'none',
       }}
     >
@@ -51,11 +52,11 @@ export const GridDropOverlay: React.FC<GridDropOverlayProps> = ({
               transition: 'background 0.1s, border 0.1s',
               borderRadius: isActive ? 8 : 0,
               boxShadow: isActive ? '0 0 0 2px #7ec7ff88' : undefined,
-              pointerEvents: 'none', // Prevent grid cell from capturing pointer events
+              pointerEvents: 'none',
             }}
           />
         );
       })}
     </div>
-  );
+  ) : null;
 };

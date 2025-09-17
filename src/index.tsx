@@ -97,6 +97,7 @@ const App: FC = () => {
   const onNavDragStart = (key: string) => (e: DragEvent<HTMLLIElement>) => {
     setDragNavPanelKey(key);
     e.dataTransfer.setData('panelKey', key);
+    window.dispatchEvent(new Event('nav-drag-start'));
   };
 
   /**
@@ -140,8 +141,8 @@ const App: FC = () => {
       x = pos.x;
       y = pos.y;
     }
-    setOpenPanels([
-      ...openPanels,
+    setOpenPanels((prev) => [
+      ...prev,
       {
         id,
         key: panelDef.key,
@@ -286,7 +287,10 @@ const App: FC = () => {
                 }}
                 draggable
                 onDragStart={onNavDragStart(panel.key)}
-                onDragEnd={() => setDragNavPanelKey(null)}
+                onDragEnd={() => {
+                  setDragNavPanelKey(null);
+                  window.dispatchEvent(new Event('nav-drag-end'));
+                }}
                 title={panel.title}
               >
                 <span style={{ marginBottom: 4 }}>

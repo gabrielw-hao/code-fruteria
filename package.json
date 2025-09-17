@@ -6,7 +6,10 @@
   "main": "index.tsx",
   "scripts": {
     "test": "jest --coverage --coverageReporters=text",
-    "start": "webpack-dev-server --mode development --open",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "prod": "node server/index.js",
+    "server": "node server/index.js",
+    "client": "webpack-dev-server --mode development --open",
     "build": "webpack --mode production"
   },
   "dependencies": {
@@ -25,6 +28,7 @@
     "@types/jest": "^30.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "concurrently": "^9.2.1",
     "css-loader": "^3.6.0",
     "html-webpack-plugin": "^5.6.3",
     "identity-obj-proxy": "^3.0.0",

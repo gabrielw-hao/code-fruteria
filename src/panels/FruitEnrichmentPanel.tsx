@@ -1,23 +1,24 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import { useTheme } from '../context/ThemeContext';
+import { THEME_LIGHT } from '../constants';
 import ResizableDraggablePanel from '../components/ResizableDraggablePanel';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef } from 'ag-grid-community';
-import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-const gridStyle: React.CSSProperties = {
-  background: '#20263a',
-  border: '1.5px solid #2e3650',
+const getGridStyle = (theme: string): React.CSSProperties => ({
+  background: theme === THEME_LIGHT ? '#f5f6fa' : '#20263a',
+  border: theme === THEME_LIGHT ? '1.5px solid #dbe2ef' : '1.5px solid #2e3650',
   borderRadius: 10,
   padding: '18px 24px',
   fontFamily: 'monospace',
-  color: '#e0e6f5',
+  color: theme === THEME_LIGHT ? '#232634' : '#e0e6f5',
   fontSize: 15,
   minWidth: 260,
   minHeight: 120,
   boxShadow: '0 2px 8px #0004',
   margin: 0,
-};
+});
 
 /**
  * Props for FruitEnrichmentPanel.
@@ -36,6 +37,7 @@ const FruitEnrichmentPanel: React.FC<FruitEnrichmentPanelProps> = ({
   fruit,
   onClose,
 }) => {
+  const { theme } = useTheme();
   const [panelState, setPanelState] = useState({
     x: 200,
     y: 120,
@@ -52,23 +54,23 @@ const FruitEnrichmentPanel: React.FC<FruitEnrichmentPanelProps> = ({
         headerName: 'Property',
         field: 'property',
         flex: 1,
-        cellStyle: {
+        cellStyle: () => ({
           fontWeight: 700,
-          color: '#333',
+          color: theme === THEME_LIGHT ? '#232634' : '#fff',
           fontFamily: 'inherit',
-        },
+        }),
       },
       {
         headerName: 'Value',
         field: 'value',
         flex: 2,
-        cellStyle: {
-          color: '#333',
+        cellStyle: () => ({
+          color: theme === THEME_LIGHT ? '#232634' : '#fff',
           fontFamily: 'inherit',
-        },
+        }),
       },
     ],
-    []
+    [theme]
   );
 
   /**
@@ -114,14 +116,29 @@ const FruitEnrichmentPanel: React.FC<FruitEnrichmentPanelProps> = ({
         <div style={{ height: '100%', width: '100%' }}>
           <div
             className='ag-theme-alpine'
-            style={{
-              height: panelState.height - 40,
-              width: '100%',
-              background: '#20263a',
-              borderRadius: 10,
-              fontSize: 15,
-              color: '#e0e6f5',
-            }}
+            style={
+              {
+                height: panelState.height - 40,
+                width: '100%',
+                background: theme === THEME_LIGHT ? '#f5f6fa' : '#20263a',
+                borderRadius: 10,
+                fontSize: 15,
+                color: theme === THEME_LIGHT ? '#232634' : '#fff',
+                '--ag-header-background-color':
+                  theme === THEME_LIGHT ? '#e9ecf3' : '#232b3e',
+                '--ag-header-foreground-color':
+                  theme === THEME_LIGHT ? '#232634' : '#fff',
+                '--ag-background-color':
+                  theme === THEME_LIGHT ? '#f5f6fa' : '#181c24',
+                '--ag-odd-row-background-color':
+                  theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+                '--ag-row-hover-color':
+                  theme === THEME_LIGHT ? '#e0e7ff' : '#353b4a',
+                '--ag-foreground-color':
+                  theme === THEME_LIGHT ? '#232634' : '#fff',
+                '--ag-data-color': theme === THEME_LIGHT ? '#232634' : '#fff',
+              } as React.CSSProperties
+            }
           >
             <AgGridReact
               columnDefs={columnDefs}

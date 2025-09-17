@@ -4,7 +4,6 @@ import FruitEnrichmentPanel from './FruitEnrichmentPanel';
 import ReactDOM from 'react-dom';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
-import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { THEME_LIGHT } from '../constants';
 
@@ -215,13 +214,16 @@ const FruitBook: React.FC = () => {
             '--ag-header-background-color':
               theme === THEME_LIGHT ? '#e9ecf3' : '#232b3e',
             '--ag-header-foreground-color':
-              theme === THEME_LIGHT ? '#232634' : '#fff',
+              theme === THEME_LIGHT ? '#232634' : '#e0e6f5',
             '--ag-background-color':
-              theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+              theme === THEME_LIGHT ? '#f5f6fa' : '#181c24',
             '--ag-odd-row-background-color':
               theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
             '--ag-row-hover-color':
               theme === THEME_LIGHT ? '#e0e7ff' : '#353b4a',
+            '--ag-foreground-color':
+              theme === THEME_LIGHT ? '#232634' : '#e0e6f5',
+            '--ag-data-color': theme === THEME_LIGHT ? '#232634' : '#e0e6f5',
           } as React.CSSProperties
         }
       >
@@ -232,13 +234,14 @@ const FruitBook: React.FC = () => {
           defaultColDef={defaultColDef}
           headerHeight={38}
           rowHeight={38}
-          rowSelection='single'
+          rowSelection={{ mode: 'singleRow' }}
           onSelectionChanged={onSelectionChanged}
           onRowDoubleClicked={onRowDoubleClicked}
           getRowStyle={getRowStyle}
           suppressCellFocus={true}
           pagination={true}
           paginationPageSize={10}
+          paginationPageSizeSelector={[10, 20, 50, 100]}
         />
       </div>
       {selectedFruit &&

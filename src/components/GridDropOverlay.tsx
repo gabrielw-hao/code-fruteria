@@ -1,4 +1,5 @@
 import React from 'react';
+import { COLORS } from '../constants/colors';
 
 interface GridDropOverlayProps {
   rows: number;
@@ -30,7 +31,7 @@ export const GridDropOverlay: React.FC<GridDropOverlayProps> = ({
         gridTemplateRows: `repeat(${rows}, 1fr)`,
         gridTemplateColumns: `repeat(${cols}, 1fr)`,
         zIndex: 2000,
-        background: 'rgba(30,40,80,0.18)',
+        background: COLORS.gridDropOverlayBg,
         opacity: 1,
         transition: 'background 0.1s, opacity 0.1s',
         userSelect: 'none',
@@ -45,13 +46,15 @@ export const GridDropOverlay: React.FC<GridDropOverlayProps> = ({
           <div
             key={idx}
             style={{
-              border: '2.5px dashed #7ec7ff',
+              border: `2.5px dashed ${COLORS.gridDropOverlayBorder}`,
               background: isActive
-                ? 'rgba(126,199,255,0.32)'
-                : 'rgba(255,255,255,0.07)',
+                ? COLORS.gridDropOverlayActive
+                : COLORS.gridDropOverlayInactive,
               transition: 'background 0.1s, border 0.1s',
               borderRadius: isActive ? 8 : 0,
-              boxShadow: isActive ? '0 0 0 2px #7ec7ff88' : undefined,
+              boxShadow: isActive
+                ? `0 0 0 2px ${COLORS.gridDropOverlayBoxShadow}`
+                : undefined,
               pointerEvents: 'none',
             }}
           />

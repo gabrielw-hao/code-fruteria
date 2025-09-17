@@ -10,6 +10,7 @@ import LoginComponent from './components/LoginComponent';
 import UserProfile from './components/UserProfile';
 import { getPanelList } from './panelList';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { COLORS } from './constants/colors';
 
 import { message as antdMessage } from 'antd';
 
@@ -249,7 +250,11 @@ const App: FC = () => {
             width: 90, // Increased width
             background: 'var(--side-nav-bg)',
             padding: '0.5rem 0.25rem',
-            borderRight: '1px solid #3e4a6b',
+            borderRight: `1px solid ${
+              COLORS.panelHeaderBgLight.split(',')[0].split('(')[1]
+                ? '#3e4a6b'
+                : '#3e4a6b'
+            }`,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -276,7 +281,9 @@ const App: FC = () => {
                   cursor: 'grab',
                   fontWeight: 'normal',
                   background:
-                    dragNavPanelKey === panel.key ? '#353b4a' : undefined,
+                    dragNavPanelKey === panel.key
+                      ? COLORS.fruitBookBorderDark
+                      : undefined,
                   padding: 8,
                   borderRadius: 10,
                   display: 'flex',
@@ -284,7 +291,7 @@ const App: FC = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: 13,
-                  color: '#e0e0e0',
+                  color: COLORS.grayLight,
                   width: '100%',
                   transition: 'background 0.2s',
                   textAlign: 'center', // Center text
@@ -358,8 +365,12 @@ const App: FC = () => {
               zIndex: 10,
               display: 'flex',
               alignItems: 'center',
-              boxShadow: '0 2px 8px #0002',
-              borderBottom: '1px solid #3e4a6b',
+              boxShadow: `0 2px 8px ${COLORS.shadowLight}`,
+              borderBottom: `1px solid ${
+                COLORS.panelHeaderBgLight.split(',')[0].split('(')[1]
+                  ? '#3e4a6b'
+                  : '#3e4a6b'
+              }`,
             }}
           >
             {/* Hamburger/X icon */}
@@ -368,7 +379,7 @@ const App: FC = () => {
               style={{
                 background: 'transparent',
                 border: 'none',
-                color: '#fff',
+                color: COLORS.white,
                 fontSize: 26,
                 cursor: 'pointer',
                 marginRight: 20,
@@ -424,7 +435,7 @@ const App: FC = () => {
                 fontSize: 22,
                 letterSpacing: 2,
                 color: '#fff',
-                textShadow: '0 1px 2px #0006',
+                textShadow: `0 1px 2px ${COLORS.shadowHeavy}`,
                 userSelect: 'none',
                 textTransform: 'uppercase',
               }}
@@ -444,7 +455,7 @@ const App: FC = () => {
             >
               <label
                 htmlFor='grid-layout-select'
-                style={{ fontWeight: 500, color: '#fff' }}
+                style={{ fontWeight: 500, color: COLORS.white }}
               >
                 Grid Layout:
               </label>
@@ -472,7 +483,7 @@ const App: FC = () => {
           {openPanels.length === 0 ? (
             <div
               style={{
-                color: '#888',
+                color: COLORS.gray,
                 textAlign: 'center',
                 marginTop: '2rem',
               }}

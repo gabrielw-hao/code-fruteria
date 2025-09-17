@@ -6,6 +6,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { THEME_LIGHT } from '../constants';
+import { COLORS } from '../constants/colors';
 
 // Register ag-grid modules (required for module-based builds)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -106,19 +107,22 @@ const getColumnDefs = (theme: 'dark' | 'light'): ColDef[] => [
       color:
         params.value === 'Available'
           ? theme === THEME_LIGHT
-            ? '#5a3ec8'
-            : '#7c5fe6'
+            ? COLORS.fruitBookPrimary
+            : COLORS.fruitBookSecondary
           : params.value === 'Pending'
           ? theme === THEME_LIGHT
-            ? '#b97b00'
-            : '#ffb300'
+            ? COLORS.fruitBookGold
+            : COLORS.fruitBookYellow
           : theme === THEME_LIGHT
-          ? '#c0392b'
-          : '#e57373',
+          ? COLORS.fruitBookRed
+          : COLORS.fruitBookLightRed,
       fontWeight: 700,
       fontFamily: 'monospace',
       fontSize: 16,
-      background: theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+      background:
+        theme === THEME_LIGHT
+          ? COLORS.fruitBookBgLight
+          : COLORS.fruitBookBgDark,
     }),
   },
   { headerName: 'Details', field: 'details', minWidth: 180 },
@@ -157,22 +161,26 @@ const FruitBook: React.FC = () => {
         return {
           fontFamily: 'monospace',
           fontSize: 16,
-          color: theme === THEME_LIGHT ? '#232634' : '#fff',
-          background: '#7c5fe6',
+          color:
+            theme === THEME_LIGHT
+              ? COLORS.fruitBookDataColorLight
+              : COLORS.white,
+          background: COLORS.fruitBookSecondary,
         };
       }
       return {
         fontFamily: 'monospace',
         fontSize: 16,
-        color: theme === THEME_LIGHT ? '#232634' : '#f5f5f5',
+        color:
+          theme === THEME_LIGHT ? COLORS.fruitBookDataColorLight : '#f5f5f5',
         background:
           theme === THEME_LIGHT
             ? params.node.rowIndex % 2 === 0
-              ? '#f5f6fa'
-              : '#e9ecf3'
+              ? COLORS.fruitBookBgLight
+              : COLORS.fruitBookBgAltLight
             : params.node.rowIndex % 2 === 0
-            ? '#232b3e'
-            : '#262f47',
+            ? COLORS.fruitBookBgDark
+            : COLORS.fruitBookBgAltDark,
       };
     },
     [selectedFruit, theme]
@@ -182,7 +190,10 @@ const FruitBook: React.FC = () => {
     <div
       style={{
         padding: 0,
-        background: theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+        background:
+          theme === THEME_LIGHT
+            ? COLORS.fruitBookBgLight
+            : COLORS.fruitBookBgDark,
       }}
     >
       <div
@@ -190,11 +201,19 @@ const FruitBook: React.FC = () => {
           fontFamily: 'monospace',
           fontWeight: 700,
           fontSize: 22,
-          color: theme === THEME_LIGHT ? '#232634' : '#fff',
-          background: theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+          color:
+            theme === THEME_LIGHT
+              ? COLORS.fruitBookDataColorLight
+              : COLORS.white,
+          background:
+            theme === THEME_LIGHT
+              ? COLORS.fruitBookBgLight
+              : COLORS.fruitBookBgDark,
           padding: '16px 24px 10px 24px',
           borderBottom:
-            theme === THEME_LIGHT ? '1px solid #dbe2ef' : '1px solid #353b4a',
+            theme === THEME_LIGHT
+              ? `1px solid ${COLORS.fruitBookBorderLight}`
+              : `1px solid ${COLORS.fruitBookBorderDark}`,
           letterSpacing: 1,
           minWidth: 700,
         }}
@@ -209,21 +228,41 @@ const FruitBook: React.FC = () => {
             width: '100%',
             minWidth: 700,
             border:
-              theme === THEME_LIGHT ? '1px solid #dbe2ef' : '1px solid #7c5fe6',
-            background: theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+              theme === THEME_LIGHT
+                ? `1px solid ${COLORS.fruitBookBorderLight}`
+                : `1px solid ${COLORS.fruitBookSecondary}`,
+            background:
+              theme === THEME_LIGHT
+                ? COLORS.fruitBookBgLight
+                : COLORS.fruitBookBgDark,
             '--ag-header-background-color':
-              theme === THEME_LIGHT ? '#e9ecf3' : '#232b3e',
+              theme === THEME_LIGHT
+                ? COLORS.fruitBookBgAltLight
+                : COLORS.fruitBookBgDark,
             '--ag-header-foreground-color':
-              theme === THEME_LIGHT ? '#232634' : '#e0e6f5',
+              theme === THEME_LIGHT
+                ? COLORS.fruitBookDataColorLight
+                : COLORS.fruitBookDataColorDark,
             '--ag-background-color':
-              theme === THEME_LIGHT ? '#f5f6fa' : '#181c24',
+              theme === THEME_LIGHT
+                ? COLORS.fruitBookBgLight
+                : COLORS.fruitBookBgDeepDark,
             '--ag-odd-row-background-color':
-              theme === THEME_LIGHT ? '#f5f6fa' : '#232b3e',
+              theme === THEME_LIGHT
+                ? COLORS.fruitBookBgLight
+                : COLORS.fruitBookBgDark,
             '--ag-row-hover-color':
-              theme === THEME_LIGHT ? '#e0e7ff' : '#353b4a',
+              theme === THEME_LIGHT
+                ? COLORS.fruitBookBlueLight
+                : COLORS.fruitBookBorderDark,
             '--ag-foreground-color':
-              theme === THEME_LIGHT ? '#232634' : '#e0e6f5',
-            '--ag-data-color': theme === THEME_LIGHT ? '#232634' : '#e0e6f5',
+              theme === THEME_LIGHT
+                ? COLORS.fruitBookDataColorLight
+                : COLORS.fruitBookDataColorDark,
+            '--ag-data-color':
+              theme === THEME_LIGHT
+                ? COLORS.fruitBookDataColorLight
+                : COLORS.fruitBookDataColorDark,
           } as React.CSSProperties
         }
       >

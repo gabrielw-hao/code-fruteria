@@ -11,6 +11,7 @@ import {
   List,
   message as antdMessage,
 } from 'antd';
+import { COLORS } from '../constants/colors';
 const { Title, Text } = Typography;
 
 const FRUIT_LIST: Fruit[] = ['apple', 'banana', 'orange'];
@@ -37,9 +38,9 @@ export const FruitViewPanel: React.FC = () => {
     () =>
       FRUIT_LIST.map((fruit) => (
         <List.Item key={fruit} style={{ padding: '4px 0' }}>
-          <Text style={{ color: '#bfcfff', fontSize: 16 }}>
+          <Text style={{ color: COLORS.fruitViewText, fontSize: 16 }}>
             {fruit}:{' '}
-            <Text strong style={{ color: '#222' }}>
+            <Text strong style={{ color: COLORS.fruitViewTextStrong }}>
               {inventory[fruit]}
             </Text>
           </Text>
@@ -75,8 +76,8 @@ export const FruitViewPanel: React.FC = () => {
   }, []);
 
   const messageColor = useMemo(() => {
-    if (message.startsWith('Bought')) return '#52c41a';
-    if (message.startsWith('Not enough')) return '#f5222d';
+    if (message.startsWith('Bought')) return COLORS.fruitViewBought;
+    if (message.startsWith('Not enough')) return COLORS.fruitViewNotEnough;
     return undefined;
   }, [message]);
 
@@ -94,7 +95,7 @@ export const FruitViewPanel: React.FC = () => {
       <Card
         style={{
           borderRadius: 12,
-          boxShadow: '0 2px 12px #0004',
+          boxShadow: `0 2px 12px ${COLORS.fruitViewBoxShadow}`,
           minWidth: 350,
           maxWidth: 400,
         }}

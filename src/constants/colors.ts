@@ -1,0 +1,68 @@
+export const COLORS = {
+  white: '#fff',
+  black: '#000',
+  grayLight: '#e0e0e0',
+  gray: '#888',
+  grayDark: '#232634',
+  shadowLight: '#0002',
+  shadowMedium: '#0004',
+  shadowHeavy: '#0006',
+
+  // Theme backgrounds
+  appBgLight: '#fff',
+  appBgDark: '#0b0f14',
+  panelBgLight: '#fff',
+  panelBgDark: '#0f1720',
+  panelHeaderBgLight: 'linear-gradient(90deg, #3e4a6b, #2b3556)',
+  panelHeaderBgDark: 'linear-gradient(90deg, #1f2636, #2b3556)',
+  panelHeaderFg: '#fff',
+  sideNavBg: '#232b3e',
+  topNavBgLight: 'linear-gradient(90deg, #2b3556 0%, #3e4a6b 100%)',
+  topNavBgDark: 'linear-gradient(90deg, #1f2636, #2b3556)',
+
+  // FruitBookPanel
+  fruitBookPrimary: '#5a3ec8',
+  fruitBookSecondary: '#7c5fe6',
+  fruitBookGold: '#b97b00',
+  fruitBookYellow: '#ffb300',
+  fruitBookRed: '#c0392b',
+  fruitBookLightRed: '#e57373',
+  fruitBookBgLight: '#f5f6fa',
+  fruitBookBgDark: '#232b3e',
+  fruitBookBorderLight: '#dbe2ef',
+  fruitBookBorderDark: '#353b4a',
+  fruitBookBgAltLight: '#e9ecf3',
+  fruitBookBgAltDark: '#262f47',
+  fruitBookDataColorLight: '#232634',
+  fruitBookDataColorDark: '#e0e6f5',
+  fruitBookBgDeepDark: '#181c24',
+  fruitBookBlueLight: '#e0e7ff',
+
+  // FruitViewPanel
+  fruitViewText: '#bfcfff',
+  fruitViewTextStrong: '#222',
+  fruitViewBought: '#52c41a',
+  fruitViewNotEnough: '#f5222d',
+  fruitViewBoxShadow: '#0004',
+
+  // FruitEnrichmentPanel
+  enrichmentBgLight: '#f5f6fa',
+  enrichmentBgDark: '#20263a',
+  enrichmentBorderLight: '#dbe2ef',
+  enrichmentBorderDark: '#2e3650',
+  enrichmentTextLight: '#232634',
+  enrichmentTextDark: '#e0e6f5',
+  enrichmentBoxShadow: '#0004',
+  enrichmentBgAltLight: '#e9ecf3',
+  enrichmentBgAltDark: '#232b3e',
+  enrichmentBgDeepDark: '#181c24',
+  enrichmentBlueLight: '#e0e7ff',
+  enrichmentBlueDark: '#353b4a',
+
+  // GridDropOverlay
+  gridDropOverlayBg: 'rgba(30,40,80,0.18)',
+  gridDropOverlayBorder: '#7ec7ff',
+  gridDropOverlayActive: 'rgba(126,199,255,0.32)',
+  gridDropOverlayInactive: 'rgba(255,255,255,0.07)',
+  gridDropOverlayBoxShadow: '#7ec7ff88',
+};

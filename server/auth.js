@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const USER = {
   id: '1',
   username: 'admin',
+  email: 'admin@gmail.com',
   passwordHash: bcrypt.hashSync('password', 10),
   role: 'admin',
 };
@@ -39,6 +40,7 @@ router.post('/login', async (req, res) => {
     user: {
       id: USER.id,
       username: USER.username,
+      email: USER.email,
       role: USER.role,
     },
   });

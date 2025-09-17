@@ -97,12 +97,15 @@ export const FruitViewPanel: React.FC = () => {
     }
   }, [selectedFruit, amount, inventory]);
 
-  // Message color logic
+  // Improved message color logic
   let messageColor = COLORS.fruitViewText;
-  if (message.startsWith('Bought')) messageColor = COLORS.fruitViewBought;
-  if (message.startsWith('Sold')) messageColor = COLORS.fruitViewTextStrong;
-  if (message.startsWith('Not enough'))
+  if (message.startsWith('Bought')) {
+    messageColor = COLORS.fruitViewBought;
+  } else if (message.startsWith('Sold')) {
+    messageColor = COLORS.fruitViewTextStrong;
+  } else if (message.startsWith('Not enough')) {
     messageColor = COLORS.fruitViewNotEnough;
+  }
 
   return (
     <ViewPanelWrapper className='panels'>

@@ -65,11 +65,18 @@ const UserProfile: React.FC<UserProfileProps> = ({ onLogout }) => {
   const { theme, toggleTheme } = useTheme();
   const [visible, setVisible] = useState(false);
 
-  // You can fetch/display real user info here if available
-  const userInfo = {
-    name: 'User',
-    email: 'user@email.com',
-  };
+  // Fetch user info from localStorage if available
+  let userInfo = { name: 'User', email: 'user@email.com' };
+  try {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      userInfo = {
+        name: parsed.username || 'User',
+        email: parsed.email || 'user@email.com',
+      };
+    }
+  } catch {}
 
   const handleOpen = () => setVisible(true);
   const handleClose = () => setVisible(false);

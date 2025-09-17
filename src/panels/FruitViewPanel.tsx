@@ -98,7 +98,7 @@ export const FruitViewPanel: React.FC = () => {
           minWidth: 350,
           maxWidth: 400,
         }}
-        bodyStyle={{ padding: 32 }}
+        styles={{ body: { padding: 32 } }}
       >
         <Title level={3} style={{ marginTop: 0, marginBottom: 24 }}>
           Fruit View
@@ -114,8 +114,8 @@ export const FruitViewPanel: React.FC = () => {
               onChange={handleFruitChange}
               style={{ width: 120 }}
               getPopupContainer={() => document.body}
-              dropdownMatchSelectWidth={false}
-              dropdownClassName='fruit-select-dropdown'
+              popupMatchSelectWidth={false}
+              classNames={{ popup: { root: 'fruit-select-dropdown' } }}
             >
               {fruitOptions}
             </Select>

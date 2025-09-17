@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { createPortal } from 'react-dom';
-import { Button, Typography, Switch, Icon } from 'antd';
+import { Button, Typography, Switch } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import { THEME_LIGHT, THEME_DARK } from '../constants';
 
 // Styles
@@ -126,8 +127,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ onLogout }) => {
       </Button>
       <div style={themeSwitchStyle}>
         <Switch
-          checkedChildren={<Icon type='check' />}
-          unCheckedChildren={<Icon type='close' />}
+          checkedChildren='✔'
+          unCheckedChildren='✖'
           checked={theme === 'dark'}
           onChange={onThemeToggle}
           defaultChecked
@@ -158,7 +159,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onLogout }) => {
       <div style={{ marginLeft: 'auto' }}>
         <Button
           shape='circle'
-          icon='user'
+          icon={<UserOutlined />}
           onClick={handleOpen}
           style={{
             background: theme === THEME_LIGHT ? '#f5f6fa' : '#232634',

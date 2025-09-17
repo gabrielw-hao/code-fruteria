@@ -1,4 +1,3 @@
-import 'antd/dist/antd.css';
 import './index.css';
 import React, { useState, DragEvent, FC, useEffect, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';

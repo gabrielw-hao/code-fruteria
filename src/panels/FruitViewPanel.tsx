@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { MockFruitMachine, Fruit } from '../../engine/MockFruitMachine';
-// Add Ant Design imports
+import styled from 'styled-components';
 import {
   Card,
   Form,
@@ -12,11 +11,35 @@ import {
   message as antdMessage,
 } from 'antd';
 import { COLORS } from '../constants/colors';
+import { MockFruitMachine, Fruit } from '../../engine/MockFruitMachine';
 const { Title, Text } = Typography;
-
 const FRUIT_LIST: Fruit[] = ['apple', 'banana', 'orange'];
-
 const machine = new MockFruitMachine();
+
+const ViewPanelWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100%;
+  padding: 32px 0;
+`;
+
+const StyledCard = styled(Card)`
+  && {
+    border-radius: 12px;
+    box-shadow: 0 2px 12px ${COLORS.fruitViewBoxShadow};
+    min-width: 350px;
+    max-width: 400px;
+    .ant-card-body {
+      padding: 32px;
+    }
+  }
+`;
+
+const MessageWrapper = styled.div`
+  min-height: 24px;
+  margin-bottom: 16px;
+`;
 
 export const FruitViewPanel: React.FC = () => {
   const [inventory, setInventory] = useState(machine.getInventory());
@@ -28,7 +51,7 @@ export const FruitViewPanel: React.FC = () => {
     () =>
       FRUIT_LIST.map((fruit) => (
         <Select.Option key={fruit} value={fruit}>
-          {fruit}
+          {fruit.charAt(0).toUpperCase() + fruit.slice(1)}
         </Select.Option>
       )),
     []
@@ -36,71 +59,54 @@ export const FruitViewPanel: React.FC = () => {
 
   const inventoryList = useMemo(
     () =>
-      FRUIT_LIST.map((fruit) => (
-        <List.Item key={fruit} style={{ padding: '4px 0' }}>
-          <Text style={{ color: COLORS.fruitViewText, fontSize: 16 }}>
-            {fruit}:{' '}
-            <Text strong style={{ color: COLORS.fruitViewTextStrong }}>
-              {inventory[fruit]}
-            </Text>
+      Object.entries(inventory).map(([fruit, qty]) => (
+        <List.Item key={fruit}>
+          <Text>
+            {fruit.charAt(0).toUpperCase() + fruit.slice(1)}: {qty}
           </Text>
         </List.Item>
       )),
     [inventory]
   );
 
+  const handleFruitChange = (value: Fruit) => setSelectedFruit(value);
+  const handleAmountChange = (value: number | null) => setAmount(value || 1);
+
   const handleBuy = useCallback(() => {
-    if (machine.buy(selectedFruit, amount)) {
-      setMessage(`Bought ${amount} ${selectedFruit}(s).`);
-      antdMessage.success(`Bought ${amount} ${selectedFruit}(s).`);
+    const success = machine.buy(selectedFruit, amount);
+    setInventory({ ...machine.getInventory() });
+    if (success) {
+      setMessage(`Bought ${amount} ${selectedFruit}(s)!`);
+      antdMessage.success(`Bought ${amount} ${selectedFruit}(s)!`);
     } else {
-      setMessage(`Not enough ${selectedFruit}s in inventory.`);
-      antdMessage.error(`Not enough ${selectedFruit}s in inventory.`);
+      setMessage('Not enough fruit to buy.');
+      antdMessage.error('Not enough fruit to buy.');
     }
-    setInventory(machine.getInventory());
   }, [selectedFruit, amount]);
 
   const handleSell = useCallback(() => {
-    machine.sell(selectedFruit, amount);
-    setMessage(`Sold ${amount} ${selectedFruit}(s).`);
-    antdMessage.info(`Sold ${amount} ${selectedFruit}(s).`);
-    setInventory(machine.getInventory());
-  }, [selectedFruit, amount]);
+    // Only allow selling if user has enough fruit
+    if (inventory[selectedFruit] >= amount) {
+      machine.sell(selectedFruit, amount);
+      setInventory({ ...machine.getInventory() });
+      setMessage(`Sold ${amount} ${selectedFruit}(s)!`);
+      antdMessage.info(`Sold ${amount} ${selectedFruit}(s)!`);
+    } else {
+      setMessage('Not enough fruit to sell.');
+      antdMessage.error('Not enough fruit to sell.');
+    }
+  }, [selectedFruit, amount, inventory]);
 
-  const handleFruitChange = useCallback((value) => {
-    setSelectedFruit(value as Fruit);
-  }, []);
-
-  const handleAmountChange = useCallback((value) => {
-    setAmount(Number(value));
-  }, []);
-
-  const messageColor = useMemo(() => {
-    if (message.startsWith('Bought')) return COLORS.fruitViewBought;
-    if (message.startsWith('Not enough')) return COLORS.fruitViewNotEnough;
-    return undefined;
-  }, [message]);
+  // Message color logic
+  let messageColor = COLORS.fruitViewText;
+  if (message.startsWith('Bought')) messageColor = COLORS.fruitViewBought;
+  if (message.startsWith('Sold')) messageColor = COLORS.fruitViewTextStrong;
+  if (message.startsWith('Not enough'))
+    messageColor = COLORS.fruitViewNotEnough;
 
   return (
-    <div
-      className='panels'
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        minHeight: '100%',
-        padding: '32px 0',
-      }}
-    >
-      <Card
-        style={{
-          borderRadius: 12,
-          boxShadow: `0 2px 12px ${COLORS.fruitViewBoxShadow}`,
-          minWidth: 350,
-          maxWidth: 400,
-        }}
-        styles={{ body: { padding: 32 } }}
-      >
+    <ViewPanelWrapper className='panels'>
+      <StyledCard>
         <Title level={3} style={{ marginTop: 0, marginBottom: 24 }}>
           Fruit View
         </Title>
@@ -138,18 +144,18 @@ export const FruitViewPanel: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
-        <div style={{ minHeight: 24, marginBottom: 16 }}>
+        <MessageWrapper>
           {message && (
             <Text strong style={{ color: messageColor }}>
               {message}
             </Text>
           )}
-        </div>
+        </MessageWrapper>
         <Title level={4} style={{ marginBottom: 8 }}>
           Inventory
         </Title>
         <List size='small'>{inventoryList}</List>
-      </Card>
-    </div>
+      </StyledCard>
+    </ViewPanelWrapper>
   );
 };

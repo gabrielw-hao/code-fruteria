@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import styled from 'styled-components';
 import { useTheme } from '../context/ThemeContext';
 import { THEME_LIGHT } from '../constants';
 import { COLORS } from '../constants/colors';
@@ -7,26 +8,48 @@ import { AgGridReact } from 'ag-grid-react';
 import { ColDef } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-const getGridStyle = (theme: string): React.CSSProperties => ({
-  background:
-    theme === THEME_LIGHT ? COLORS.enrichmentBgLight : COLORS.enrichmentBgDark,
-  border:
-    theme === THEME_LIGHT
-      ? `1.5px solid ${COLORS.enrichmentBorderLight}`
-      : `1.5px solid ${COLORS.enrichmentBorderDark}`,
-  borderRadius: 10,
-  padding: '18px 24px',
-  fontFamily: 'monospace',
-  color:
-    theme === THEME_LIGHT
-      ? COLORS.enrichmentTextLight
-      : COLORS.enrichmentTextDark,
-  fontSize: 15,
-  minWidth: 260,
-  minHeight: 120,
-  boxShadow: `0 2px 8px ${COLORS.enrichmentBoxShadow}`,
-  margin: 0,
-});
+const EnrichmentPanelWrapper = styled.div`
+  height: 100%;
+  width: 100%;
+`;
+
+const StyledAgGridWrapper = styled.div<{
+  $themeType: 'dark' | 'light';
+  $panelHeight: number;
+}>`
+  height: ${({ $panelHeight }) => $panelHeight - 40}px;
+  width: 100%;
+  background: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.enrichmentBgLight
+      : COLORS.enrichmentBgDark};
+  border-radius: 10px;
+  font-size: 15px;
+  color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT ? COLORS.enrichmentTextLight : COLORS.white};
+  --ag-header-background-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.enrichmentBgAltLight
+      : COLORS.enrichmentBgAltDark};
+  --ag-header-foreground-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT ? COLORS.enrichmentTextLight : COLORS.white};
+  --ag-background-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.enrichmentBgLight
+      : COLORS.enrichmentBgDeepDark};
+  --ag-odd-row-background-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.enrichmentBgLight
+      : COLORS.enrichmentBgAltDark};
+  --ag-row-hover-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.enrichmentBlueLight
+      : COLORS.enrichmentBlueDark};
+  --ag-foreground-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT ? COLORS.enrichmentTextLight : COLORS.white};
+  --ag-data-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT ? COLORS.enrichmentTextLight : COLORS.white};
+`;
 
 /**
  * Props for FruitEnrichmentPanel.
@@ -123,53 +146,11 @@ const FruitEnrichmentPanel: React.FC<FruitEnrichmentPanelProps> = ({
       id={`fruit-enrichment-${fruit.id}`}
       title={`${fruit.name} Enrichment`}
       content={
-        <div style={{ height: '100%', width: '100%' }}>
-          <div
+        <EnrichmentPanelWrapper>
+          <StyledAgGridWrapper
             className='ag-theme-alpine'
-            style={
-              {
-                height: panelState.height - 40,
-                width: '100%',
-                background:
-                  theme === THEME_LIGHT
-                    ? COLORS.enrichmentBgLight
-                    : COLORS.enrichmentBgDark,
-                borderRadius: 10,
-                fontSize: 15,
-                color:
-                  theme === THEME_LIGHT
-                    ? COLORS.enrichmentTextLight
-                    : COLORS.white,
-                '--ag-header-background-color':
-                  theme === THEME_LIGHT
-                    ? COLORS.enrichmentBgAltLight
-                    : COLORS.enrichmentBgAltDark,
-                '--ag-header-foreground-color':
-                  theme === THEME_LIGHT
-                    ? COLORS.enrichmentTextLight
-                    : COLORS.white,
-                '--ag-background-color':
-                  theme === THEME_LIGHT
-                    ? COLORS.enrichmentBgLight
-                    : COLORS.enrichmentBgDeepDark,
-                '--ag-odd-row-background-color':
-                  theme === THEME_LIGHT
-                    ? COLORS.enrichmentBgLight
-                    : COLORS.enrichmentBgAltDark,
-                '--ag-row-hover-color':
-                  theme === THEME_LIGHT
-                    ? COLORS.enrichmentBlueLight
-                    : COLORS.enrichmentBlueDark,
-                '--ag-foreground-color':
-                  theme === THEME_LIGHT
-                    ? COLORS.enrichmentTextLight
-                    : COLORS.white,
-                '--ag-data-color':
-                  theme === THEME_LIGHT
-                    ? COLORS.enrichmentTextLight
-                    : COLORS.white,
-              } as React.CSSProperties
-            }
+            $themeType={theme}
+            $panelHeight={panelState.height}
           >
             <AgGridReact
               columnDefs={columnDefs}
@@ -181,8 +162,8 @@ const FruitEnrichmentPanel: React.FC<FruitEnrichmentPanelProps> = ({
               suppressMovableColumns={true}
               suppressMenuHide={true}
             />
-          </div>
-        </div>
+          </StyledAgGridWrapper>
+        </EnrichmentPanelWrapper>
       }
       x={panelState.x}
       y={panelState.y}

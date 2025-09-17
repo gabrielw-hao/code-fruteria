@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
+import styled from 'styled-components';
 import { useTheme } from '../context/ThemeContext';
 import FruitEnrichmentPanel from './FruitEnrichmentPanel';
 import ReactDOM from 'react-dom';
@@ -7,6 +8,75 @@ import { ColDef, ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { THEME_LIGHT } from '../constants';
 import { COLORS } from '../constants/colors';
+
+const BookPanelWrapper = styled.div<{ $themeType: 'dark' | 'light' }>`
+  padding: 0;
+  background: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.fruitBookBgLight
+      : COLORS.fruitBookBgDark};
+`;
+
+const BookPanelHeader = styled.div<{ $themeType: 'dark' | 'light' }>`
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 22px;
+  color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT ? COLORS.fruitBookDataColorLight : COLORS.white};
+  background: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.fruitBookBgLight
+      : COLORS.fruitBookBgDark};
+  padding: 16px 24px 10px 24px;
+  border-bottom: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? `1px solid ${COLORS.fruitBookBorderLight}`
+      : `1px solid ${COLORS.fruitBookBorderDark}`};
+  letter-spacing: 1px;
+  min-width: 700px;
+`;
+
+const StyledAgGridWrapper = styled.div<{ $themeType: 'dark' | 'light' }>`
+  height: 460px;
+  width: 100%;
+  min-width: 700px;
+  border: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? `1px solid ${COLORS.fruitBookBorderLight}`
+      : `1px solid ${COLORS.fruitBookSecondary}`};
+  background: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.fruitBookBgLight
+      : COLORS.fruitBookBgDark};
+  --ag-header-background-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.fruitBookBgAltLight
+      : COLORS.fruitBookBgDark};
+  --ag-header-foreground-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.fruitBookDataColorLight
+      : COLORS.fruitBookDataColorDark};
+  --ag-background-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.fruitBookBgLight
+      : COLORS.fruitBookBgDeepDark};
+  --ag-odd-row-background-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.fruitBookBgLight
+      : COLORS.fruitBookBgDark};
+  --ag-row-hover-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.fruitBookBlueLight
+      : COLORS.fruitBookBorderDark};
+  --ag-foreground-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.fruitBookDataColorLight
+      : COLORS.fruitBookDataColorDark};
+  --ag-data-color: ${({ $themeType }) =>
+    $themeType === THEME_LIGHT
+      ? COLORS.fruitBookDataColorLight
+      : COLORS.fruitBookDataColorDark};
+`;
 
 // Register ag-grid modules (required for module-based builds)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -187,85 +257,9 @@ const FruitBook: React.FC = () => {
   );
 
   return (
-    <div
-      style={{
-        padding: 0,
-        background:
-          theme === THEME_LIGHT
-            ? COLORS.fruitBookBgLight
-            : COLORS.fruitBookBgDark,
-      }}
-    >
-      <div
-        style={{
-          fontFamily: 'monospace',
-          fontWeight: 700,
-          fontSize: 22,
-          color:
-            theme === THEME_LIGHT
-              ? COLORS.fruitBookDataColorLight
-              : COLORS.white,
-          background:
-            theme === THEME_LIGHT
-              ? COLORS.fruitBookBgLight
-              : COLORS.fruitBookBgDark,
-          padding: '16px 24px 10px 24px',
-          borderBottom:
-            theme === THEME_LIGHT
-              ? `1px solid ${COLORS.fruitBookBorderLight}`
-              : `1px solid ${COLORS.fruitBookBorderDark}`,
-          letterSpacing: 1,
-          minWidth: 700,
-        }}
-      >
-        Fruit Book
-      </div>
-      <div
-        className='ag-theme-alpine'
-        style={
-          {
-            height: 460,
-            width: '100%',
-            minWidth: 700,
-            border:
-              theme === THEME_LIGHT
-                ? `1px solid ${COLORS.fruitBookBorderLight}`
-                : `1px solid ${COLORS.fruitBookSecondary}`,
-            background:
-              theme === THEME_LIGHT
-                ? COLORS.fruitBookBgLight
-                : COLORS.fruitBookBgDark,
-            '--ag-header-background-color':
-              theme === THEME_LIGHT
-                ? COLORS.fruitBookBgAltLight
-                : COLORS.fruitBookBgDark,
-            '--ag-header-foreground-color':
-              theme === THEME_LIGHT
-                ? COLORS.fruitBookDataColorLight
-                : COLORS.fruitBookDataColorDark,
-            '--ag-background-color':
-              theme === THEME_LIGHT
-                ? COLORS.fruitBookBgLight
-                : COLORS.fruitBookBgDeepDark,
-            '--ag-odd-row-background-color':
-              theme === THEME_LIGHT
-                ? COLORS.fruitBookBgLight
-                : COLORS.fruitBookBgDark,
-            '--ag-row-hover-color':
-              theme === THEME_LIGHT
-                ? COLORS.fruitBookBlueLight
-                : COLORS.fruitBookBorderDark,
-            '--ag-foreground-color':
-              theme === THEME_LIGHT
-                ? COLORS.fruitBookDataColorLight
-                : COLORS.fruitBookDataColorDark,
-            '--ag-data-color':
-              theme === THEME_LIGHT
-                ? COLORS.fruitBookDataColorLight
-                : COLORS.fruitBookDataColorDark,
-          } as React.CSSProperties
-        }
-      >
+    <BookPanelWrapper $themeType={theme}>
+      <BookPanelHeader $themeType={theme}>Fruit Book</BookPanelHeader>
+      <StyledAgGridWrapper $themeType={theme} className='ag-theme-alpine'>
         <AgGridReact<any>
           ref={gridRef}
           rowData={rowData}
@@ -282,7 +276,7 @@ const FruitBook: React.FC = () => {
           paginationPageSize={10}
           paginationPageSizeSelector={[10, 20, 50, 100]}
         />
-      </div>
+      </StyledAgGridWrapper>
       {selectedFruit &&
         ReactDOM.createPortal(
           <FruitEnrichmentPanel
@@ -291,7 +285,7 @@ const FruitBook: React.FC = () => {
           />,
           document.body
         )}
-    </div>
+    </BookPanelWrapper>
   );
 };
 

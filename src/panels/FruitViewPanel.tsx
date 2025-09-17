@@ -40,8 +40,7 @@ const MessageWrapper = styled.div`
   min-height: 24px;
   margin-bottom: 16px;
 `;
-
-export const FruitViewPanel: React.FC = () => {
+const FruitViewPanel: React.FC = () => {
   const [inventory, setInventory] = useState(machine.getInventory());
   const [selectedFruit, setSelectedFruit] = useState<Fruit>('apple');
   const [amount, setAmount] = useState(1);
@@ -97,15 +96,12 @@ export const FruitViewPanel: React.FC = () => {
     }
   }, [selectedFruit, amount, inventory]);
 
-  // Improved message color logic
+  // Message color logic
   let messageColor = COLORS.fruitViewText;
-  if (message.startsWith('Bought')) {
-    messageColor = COLORS.fruitViewBought;
-  } else if (message.startsWith('Sold')) {
-    messageColor = COLORS.fruitViewTextStrong;
-  } else if (message.startsWith('Not enough')) {
+  if (message.startsWith('Bought')) messageColor = COLORS.fruitViewBought;
+  if (message.startsWith('Sold')) messageColor = COLORS.fruitViewTextStrong;
+  if (message.startsWith('Not enough'))
     messageColor = COLORS.fruitViewNotEnough;
-  }
 
   return (
     <ViewPanelWrapper className='panels'>
@@ -162,3 +158,4 @@ export const FruitViewPanel: React.FC = () => {
     </ViewPanelWrapper>
   );
 };
+export default FruitViewPanel;

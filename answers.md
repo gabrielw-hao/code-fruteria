@@ -50,4 +50,4 @@ Added a custom grid layout selection
 
 ## 4. How would you track down a performance issue in production?
 
-Browser devtools lighthouse, performance, memory leak snapshot, UI too lag after a period of time, rerender issue, setInterval / timeout issue, eventListener, garbage collection
+Browser devtools lighthouse, performance, memory leak snapshot, UI too lag after a period of time, rerender issue, setInterval / timeout issue, eventListener, garbage collection, sentry logs, grafana
